@@ -8,8 +8,6 @@ $content = array(
 
 $message = json_encode($content);
 
-//$message    = date_format($now, 'Y-m-d H:i:s')."</>".$field_name."</>".$field_msg;
-
 $filepath   = "messages.txt"; // [*UWP*] update when published
 $file       = fopen($filepath, "a") or die("Unable to open file 'messages.txt'.");
 
