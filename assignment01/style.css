@@ -1,0 +1,16 @@
+* {
+	margin-top:0px;
+	margin-left:0px;
+	margin-right:0px;
+	margin-bottom:0px;
+}
+body {
+    height: 100%;
+    width: 960px;
+    margin: 0 auto;
+    font-family: sans-serif;
+}
+#new-roary {
+    background-color: #F8F9FA;
+    border: 1px solid #ECEDED;
+}
