@@ -46,7 +46,7 @@
                         } else if (isset($_POST['form_submitted']) && $result == 2) {
                     ?>
                     <div class="alert alert-danger" role="alert">
-                        Error: Your message is too long! (128 character limit)
+                        Error: Your input is too long! (128 character limit)
                     </div>
                     <?php 
                         }

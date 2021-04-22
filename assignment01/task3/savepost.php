@@ -12,7 +12,7 @@ $filepath   = "messages.txt"; // [*UWP*] update when published
 $file       = fopen($filepath, "a") or die("Unable to open file 'messages.txt'.");
 
 // Server-side input validation: 128 character limit
-if (strlen($_POST['fmsg']) <= 128) {
+if (strlen($_POST['fmsg']) <= 128 && strlen($_POST['fname']) <= 128) {
     if (isset($_POST['fname']) && isset($_POST['fmsg'])) {
         fwrite($file, "\n". $message); // write complete message to file
         fclose($file);
