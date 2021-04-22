@@ -1,5 +1,6 @@
 <?php
-    
+    if (isset($_POST['form_submitted']))
+        include 'savepost.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -29,18 +30,38 @@
                     <p>New Post</p>
                 </div>
                 <div id="new-roary-content">
-                    <div class="alert alert-success d-none" role="alert">
+                    <?php
+                        if (isset($_POST['form_submitted']) && $result == 0) {
+                    ?>
+                    <div class="alert alert-success" role="alert">
                         Your message was successfully posted! =)
                     </div>
-                    <form action="">
+                    <?php 
+                        } else if (isset($_POST['form_submitted']) && $result == 1) {
+                    ?>
+                    <div class="alert alert-danher" role="alert">
+                        Error: Your message could not be posted. Input invalid.
+                    </div>
+                    <?php 
+                        } else if (isset($_POST['form_submitted']) && $result == 2) {
+                    ?>
+                    <div class="alert alert-danger" role="alert">
+                        Error: Your message is too long! (128 character limit)
+                    </div>
+                    <?php 
+                        }
+                    ?>
+
+                    <form action="" method="post">
                         <div class="mb-3">
                             <label for="fname" class="form-label">Name</label>
-                            <input type="email" class="form-control" id="fname">
+                            <input type="text" class="form-control" id="fname" name="fname" required>
                         </div>
                         <div class="mb-3">
                             <label for="fmessage" class="form-label">Message</label>
-                            <textarea class="form-control" id="fmessage" rows="3"></textarea>
+                            <textarea class="form-control" id="fmsg" rows="3" name="fmsg" required></textarea>
                         </div>
+                        <input type="hidden" name="form_submitted" value="1" />
                         <button type="submit" class="btn btn-primary">Post Message</button>
                     </form>
                 </div>
@@ -48,17 +69,7 @@
 
             <!-- The container of the posted roaries -->
             <div id="roary-list">
-                <div class="roary-list-item">
-                    <div class="roary-list-item-head">
-                        Tim Berners-Lee
-                    </div>
-                    <div class="roary-list-item-msg">
-                        Hello World
-                    </div>
-                    <div class="roary-list-item-date">
-                        2020-03-18 17:11:30
-                    </div>
-                </div>
+                <?php include 'getposts.php'; ?>
             </div>
         </main>
     </body>

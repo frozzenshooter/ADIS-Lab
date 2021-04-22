@@ -9,7 +9,6 @@ body {
     height: 100%;
     width: 960px;
     margin: 0 auto;
-    font-family: sans-serif;
 }
 main {
     margin-top: 5vh;
@@ -31,12 +30,12 @@ h1 {
 /* Element style */
 #new-roary {
     background-color: #F8F9FA;
-    border: 1px solid #d6d6d6;
+    border: 1px solid #DFDFDF;
     border-radius: 4px;
 }
 #new-roary-header {
     background: #F0F1F2;
-    border-bottom: 1px solid #d6d6d6;
+    border-bottom: 1px solid #DFDFDF;
     padding: 12px 20px;
 }
 #new-roary-header p {
@@ -47,6 +46,25 @@ h1 {
 }
 
 #roary-list {
-    border: 1px solid #d6d6d6;
+    margin-top: 15px;
+    margin-bottom: 150px;
+}
+.roary-list-item {
+    border: 1px solid #DFDFDF;
     border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+.roary-list-item-head {
+    font-weight: 500;
+    font-size: 20px;
+    display: inline;
+}
+.roary-list-item-date {
+    float: right;
+    display: inline;
+    color: #6C757D;
+}
+.roary-list-item-msg {
+    margin-top: 10px;
 }
