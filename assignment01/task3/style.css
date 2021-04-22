@@ -1,0 +1,52 @@
+/* General page style */
+* {
+	margin-top:0px;
+	margin-left:0px;
+	margin-right:0px;
+	margin-bottom:0px;
+}
+body {
+    height: 100%;
+    width: 960px;
+    margin: 0 auto;
+    font-family: sans-serif;
+}
+main {
+    margin-top: 5vh;
+}
+h1 {
+    margin-bottom: 15px;
+}
+
+/* General object style */
+.btn-primary {
+    background: #17A2B8;
+    border-color: #17A2B8;
+}
+.btn-primary:hover {
+    background: #128596;
+    border-color: #128596;
+}
+
+/* Element style */
+#new-roary {
+    background-color: #F8F9FA;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+}
+#new-roary-header {
+    background: #F0F1F2;
+    border-bottom: 1px solid #d6d6d6;
+    padding: 12px 20px;
+}
+#new-roary-header p {
+    margin: 0;
+}
+#new-roary-content {
+    padding: 20px;
+}
+
+#roary-list {
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+}
