@@ -14,7 +14,7 @@ public class CGI {
                 String name = post.split("&")[0].split("=")[1].replace('+', ' ');
                 String message = post.split("&")[1].split("=")[1].replace('+', ' ');
                 if (name.length() < 128 && message.length() < 128) {
-                    String path2 = System.getProperty("user.home") + File.separator + "messages.txt";
+                    String path2 = System.getProperty("user.home") + File.separator + "html" + File.separator + "exercise1" + File.separator + "task2" + File.separator + "messages.txt";
                     System.err.println(path2);
                     File file2 = new File(path2);
                     file2.createNewFile();
@@ -36,7 +36,7 @@ public class CGI {
         System.out.println("<html>");
         System.out.println("<head>");
         System.out.println("<title>ADIS Roary</title>");
-        System.out.println("<link rel=\"stylesheet\" href=\"/style.css\">");
+        System.out.println("<link rel=\"stylesheet\" href=\"../task2css/style.css\">");
         System.out.println("</head>");
         System.out.println("<body>");
         System.out.println("<h1>Roary<h1>");
@@ -46,7 +46,7 @@ public class CGI {
         System.out.println("</div>");
         System.out.println("<div>");
         // Call CGI on form submit
-        System.out.println("<form method= \"POST\" action=\"/cgi-bin/index.sh\">");
+        System.out.println("<form method= \"POST\">");
         System.out.println("<label for=\"fname\">Name</label><br>");
         System.out.println("<input type=\"text\" id=\"fname\" name=\"fname\" value=\"\"><br>");
         System.out.println("<label for=\"fname\">Message</label><br>");
@@ -58,7 +58,8 @@ public class CGI {
 
         //List Roars
         System.out.println("<div id=\"roary-list\">");
-        String path = System.getProperty("user.home") + File.separator + "messages.txt";
+        String path = System.getProperty("user.home") + File.separator + "html" + File.separator + "exercise1" + File.separator + "task2" + File.separator + "messages.txt";
+
         File file = new File(path);
         if (file.exists()) {
             Scanner in = new Scanner(file);
