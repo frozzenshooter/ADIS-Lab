@@ -24,4 +24,4 @@ Restart the service `sudo systemctl restart apache2.service ` and navigate to 12
 
 ### Enable mod_cgi
 
-`sudo a2enmod cgi`
+`sudo a2enmod cgid`
