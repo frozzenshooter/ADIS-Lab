@@ -7,13 +7,36 @@ import java.io.FileNotFoundException;
 public class CGI {
     public static void main(String[] args) throws FileNotFoundException {
 
+	Scanner scanner = new Scanner(System.in);
+        if (args[0].equals("POST") && scanner.hasNextLine()) {
+            try {
+                String post = scanner.nextLine();
+                String name = post.split("&")[0].split("=")[1].replace('+', ' ');
+                String message = post.split("&")[1].split("=")[1].replace('+', ' ');
+                if (name.length() < 128 && message.length() < 128) {
+                    String path2 = System.getProperty("user.home") + File.separator + "messages.txt";
+                    System.err.println(path2);
+                    File file2 = new File(path2);
+                    file2.createNewFile();
+                    FileOutputStream fo = new FileOutputStream(file2, true);
+                    String log = "name=" + name + ", message=" + message + ", date=" + new java.util.Date().toString() + "\n";
+                    fo.write(log.getBytes());
+                } else {
+                    System.exit(1);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
         // Print static site content
         System.out.println("Content-type: text/html");
         System.out.println();
         System.out.println("<html>");
         System.out.println("<head>");
         System.out.println("<title>ADIS Roary</title>");
-        System.out.println("<link rel=\"stylesheet\" href=\"/var/www/style.css\">");
+        System.out.println("<link rel=\"stylesheet\" href=\"/style.css\">");
         System.out.println("</head>");
         System.out.println("<body>");
         System.out.println("<h1>Roary<h1>");
@@ -59,26 +82,5 @@ public class CGI {
         }
         System.out.println("</body>");
         System.out.println("</html>");
-        Scanner scanner = new Scanner(System.in);
-        if (args[0].equals("POST") && scanner.hasNextLine()) {
-            try {
-                String post = scanner.nextLine();
-                String name = post.split("&")[0].split("=")[1].replace('+', ' ');
-                String message = post.split("&")[1].split("=")[1].replace('+', ' ');
-                if (name.length() < 128 && message.length() < 128) {
-                    String path2 = System.getProperty("user.home") + File.separator + "messages.txt";
-                    System.err.println(path2);
-                    File file2 = new File(path2);
-                    file2.createNewFile();
-                    FileOutputStream fo = new FileOutputStream(file2, true);
-                    String log = "name=" + name + ", message=" + message + ", date=" + new java.util.Date().toString() + "\n";
-                    fo.write(log.getBytes());
-                } else {
-                    System.exit(1);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
