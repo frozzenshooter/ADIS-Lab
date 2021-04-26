@@ -1,87 +1,149 @@
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Scanner;
-import java.io.FileOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 
+/**
+ * Website and File Logging both in one file
+ */
 public class CGI {
-    public static void main(String[] args) throws FileNotFoundException {
 
-	Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) {
+        // Look up the logfile. It's the only file
+        Scanner scanner = new Scanner(System.in);
+        Path filepath = Paths.get(System.getProperty("user.home"), "html", "exercise1", "task2", "messages.txt");
+        File logfile = new File(String.valueOf(filepath));
+
+        // Check if POST request has been received.
+        // Also check for new Lines --> Parameters,
+        // so no empty requests get processed.
         if (args[0].equals("POST") && scanner.hasNextLine()) {
-            try {
-                String post = scanner.nextLine();
-                String name = post.split("&")[0].split("=")[1].replace('+', ' ');
-                String message = post.split("&")[1].split("=")[1].replace('+', ' ');
-                if (name.length() < 128 && message.length() < 128) {
-                    String path2 = System.getProperty("user.home") + File.separator + "html" + File.separator + "exercise1" + File.separator + "task2" + File.separator + "messages.txt";
-                    System.err.println(path2);
-                    File file2 = new File(path2);
-                    file2.createNewFile();
-                    FileOutputStream fo = new FileOutputStream(file2, true);
-                    String log = "name=" + name + ", message=" + message + ", date=" + new java.util.Date().toString() + "\n";
-                    fo.write(log.getBytes());
-                } else {
-                    System.exit(1);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            logToFile(scanner, logfile);
         }
 
+        //build website from file
+        String html = buildHtml(logfile);
+        System.out.println(html);
 
-        // Print static site content
-        System.out.println("Content-type: text/html");
-        System.out.println();
-        System.out.println("<html>");
-        System.out.println("<head>");
-        System.out.println("<title>ADIS Roary</title>");
-        System.out.println("<link rel=\"stylesheet\" href=\"../task2css/style.css\">");
-        System.out.println("</head>");
-        System.out.println("<body>");
-        System.out.println("<h1>Roary<h1>");
-        System.out.println("<div id=\"new-roary\">");
-        System.out.println("<div id=\"new-roary-header\">");
-        System.out.println("<h2> New Post </h2>");
-        System.out.println("</div>");
-        System.out.println("<div>");
-        // Call CGI on form submit
-        System.out.println("<form method= \"POST\">");
-        System.out.println("<label for=\"fname\">Name</label><br>");
-        System.out.println("<input type=\"text\" id=\"fname\" name=\"fname\" value=\"\"><br>");
-        System.out.println("<label for=\"fname\">Message</label><br>");
-        System.out.println("<input type=\"text\" id=\"fmsg\" name=\"fmsg\" value=\"\"><br><br>");
-        System.out.println("<input type=\"submit\" value=\"Submit\">");
-        System.out.println("</form>");
-        System.out.println("</div>");
-        System.out.println("</div>");
-
-        //List Roars
-        System.out.println("<div id=\"roary-list\">");
-        String path = System.getProperty("user.home") + File.separator + "html" + File.separator + "exercise1" + File.separator + "task2" + File.separator + "messages.txt";
-
-        File file = new File(path);
-        if (file.exists()) {
-            Scanner in = new Scanner(file);
-            while (in.hasNext()) {
-                String roar = in.nextLine();
-                String username = roar.split(",")[0].split("=")[1];
-                String message = roar.split(",")[1].split("=")[1];
-                String date = roar.split(",")[2].split("=")[1];
-                System.out.println("<div class=\"roary-list-item\">");
-                System.out.println("<div class =\"roary-list-item-head\">");
-                System.out.println(username);
-                System.out.println("</div>");
-                System.out.println("<div class=\"roary-list-item-msg\">");
-                System.out.println(message);
-                System.out.println("</div>");
-                System.out.println("<div class=\"roary-list-item-date\">");
-                System.out.println(date);
-                System.out.println("</div>");
-                System.out.println("</div>");
-            }
-        }
-        System.out.println("</body>");
-        System.out.println("</html>");
     }
+
+    /**
+     *
+     * @param logfile LogFile with roaries
+     * @return ALL the html
+     */
+    public static String buildHtml(File logfile){
+
+        String header = "Content-type: text/html\n\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "<title>ADIS Roary</title>\n" +
+                "<link rel=\"stylesheet\" href=\"../task2css/style.css\">\n" +
+                "</head>\n";
+
+        String title = "<body>\n" +
+                "<h1>Roary<h1>\n";
+
+        String inputForm = "<div id=\"new-roary\">\n" +
+                "<div id=\"new-roary-header\">\n" +
+                "<h2> New Post </h2>\n" +
+                "</div>\n" +
+                "<div>\n" +
+                "<form method= \"POST\">\n" +
+                "<label for=\"fname\">Name</label><br>\n" +
+                "<input type=\"text\" id=\"fname\" name=\"fname\" value=\"\"><br>\n" +
+                "<label for=\"fname\">Message</label><br>\n" +
+                "<input type=\"text\" id=\"fmsg\" name=\"fmsg\" value=\"\"><br><br>\n" +
+                "<input type=\"submit\" value=\"Submit\">\n"+
+                "</form>\n" +
+                "</div>\n" +
+                "</div>\n";
+
+        String roaries = buildRoaries(logfile);
+
+        String end = "</body>\n" +
+                "</html>\n";
+
+        return header+title+inputForm+roaries+end;
+    }
+
+    /**
+     * Build all roaries from logfile
+     * @param logfile file with roaries
+     * @return roaries in html format, ordered
+     */
+    public static String buildRoaries(File logfile) {
+        try (FileReader fileReader = new FileReader(logfile)) {
+            BufferedReader reader = new BufferedReader(fileReader);
+
+            //Use stack for chronological order of all roaries
+            //We assume that user wants to see newest roaries first
+            //Deque could be used to make this configuriable
+            LinkedList<String> stack = new LinkedList<>();
+
+            String roar;
+
+            while ((roar = reader.readLine()) != null){
+                //parse log line
+                String[] logs = roar.split(",");
+                String attributeSeparator = "=";
+                String username = logs[0].split(attributeSeparator)[1];
+                String message = logs[1].split(attributeSeparator)[1];
+                String date = logs[2].split(attributeSeparator)[1];
+
+                String html = "<div class=\"roary-list-item\">\n"+
+                        "<div class =\"roary-list-item-head\">\n"+
+                        username +
+                        "\n</div>\n" +
+                        "<div class=\"roary-list-item-msg\">\n" +
+                        message +
+                        "\n</div>\n"+
+                        "<div class=\"roary-list-item-date\">\n"+
+                        date+
+                        "\n</div>\n</div>\n";
+                stack.push(html);
+            }
+
+            //append all messages into one with StringBuilder
+            StringBuilder htmlBuilder = new StringBuilder();
+            while (!stack.isEmpty() ){
+                htmlBuilder.append(stack.pop());
+            }
+
+            return htmlBuilder.toString();
+
+        } catch (IOException e) {
+            System.err.println("Could not read posts from file.\nEither no file exists or you do not have the required" +
+                    "permissions");
+            return "";
+        }
+    }
+
+
+    public static void logToFile(Scanner scanner, File logfile) {
+        String message = buildLog(scanner);
+        //If message is null it was too long, so nothing gets logged
+        if (message == null) return;
+        try (FileOutputStream fo = new FileOutputStream(logfile, true)) {
+            fo.write(message.getBytes());
+        } catch (IOException e) {
+            System.err.println("Error while writing or opening file. Check permissions and task2.md");
+        }
+    }
+
+    public static String buildLog(Scanner scanner) {
+        //parse POST query
+        String[] query = scanner.nextLine().split("&");
+        String name = query[0].split("=")[1].replace('+', ' ');
+        String message = query[1].split("=")[1].replace('+', ' ');
+        //check for illegal messages
+        if ((message.length() < 128) && (name.length() < 128)) {
+            return "name=" + name + ", message=" + message + ", date=" + new java.util.Date().toString() + "\n";
+        } else {
+            return null;
+        }
+    }
+
 }
