@@ -6,9 +6,6 @@
 ### PHP mod installation
 `sudo apt install php libapache2-mod-php`
 
-### PHP mod installation
-`sudo apt install php libapache2-mod-php`
-
 ### Enable mod_php
 `sudo a2enmod php7.4`
 
@@ -20,7 +17,8 @@ Create file in /var/www/html/: phpinfo.php
     phpinfo();
 ?>`
 
-Restart the service `sudo systemctl restart apache2.service ` and navigate to 127.0.0.1/phpinfo.php 
+Restart the service `sudo systemctl restart apache2.service ` and navigate to `127.0.0.1/phpinfo.php`
+If the phpinfo page is rendered correctly php is working. 
 
 ### Enable mod_cgi
 
