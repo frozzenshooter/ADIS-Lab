@@ -22,4 +22,4 @@ For this task a java runtime is required: `sudo apt install openjdk-14-jdk`
 
 If you navigate to `127.0.0.1/exercise1/task2/` the script is executed and delivers the created html file.  
 
-Messages will be found under /var/www/messages.txt
+Messages will be found under `/var/www/html/exercise1/task2/messages.txt`
