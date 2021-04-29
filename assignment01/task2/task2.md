@@ -1,28 +1,25 @@
 # Task 2
 
-### Configuration for CGI
+### CGI installation
 
-sudo apt install apache2
+Installation of the apache server and the activation of the mod_cgi as described in task1.
 
-`sudo a2enmod cgid`
+For this task a java runtime is required: `sudo apt install openjdk-14-jdk`
 
-### Install java (openjdk)
-`sudo apt install openjdk-14-jdk`
+### Configuration
 
-Add index.sh and CGI.java to /usr/lib/cgi-bin/
++ Add index.sh and CGI.java to `/usr/lib/cgi-bin/`
+
++ Create the directory and copy the css file in it: `/var/www/html/exercise1/task2css/style.css`
+
++ Add a ScriptAlias and a DirectoryIndex in the global apache configuration file `/etc/apache2/apache2.conf`:
+    + `ScriptAlias "/exercise1/task2" "/usr/lib/cgi-bin"`
+    + `DirectoryIndex index.sh index.html`
  
-Add following line in /etc/apache2/apache2.conf:
-`ScriptAlias "/exercise1/task2" "/usr/lib/cgi-bin"`
++ Update the permissions of the index.sh file, in order to be able to execute it: `sudo chmod 767 /usr/lib/cgi-bin/index.sh`
 
-###The index.sh file also has to be able to be executed by "others":
-sudo chmod 767 /usr/lib/cgi-bin/index.sh
++ Restart the service: `sudo systemctl restart apache2.service`
 
-This allows the execution of CGI scripts under the URL "/exercise1/task2/..." e.g. "/exercise1/task2/index.sh
+If you navigate to `127.0.0.1/exercise1/task2/` the script is executed and delivers the created html file.  
 
-If you navigate to `127.0.0.1/exercise1/task2/index.sh` the script is executed and delivers the created html file.  
-
-After adding to /etc/apache2/apache2.conf:
-DirectoryIndex index.sh index.html
-the website should also be reachable under 127.0.0.1/exercise1/task2/  and under 127.0.0.1/exercise1/task2
-
-###Messages will be found under /var/www/messages.txt
+Messages will be found under `/var/www/html/exercise1/task2/messages.txt`
