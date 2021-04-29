@@ -6,15 +6,32 @@
 
 	if (isset($_POST['signup']))   // it checks whether the user clicked login button or not 
 	{
+        echo $_POST['loginname'];
 		$user = $_POST['loginname'];
 		$pass = $_POST['loginpw'];
-		$_SESSION['loggedin'] = TRUE;
-        header("Location: index.php"); 
+        $pass = password_hash($pass, PASSWORD_DEFAULT);
+
+        $db = new SQLite3("roary.db");
+        $db->query('CREATE TABLE IF NOT EXISTS "users"(
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            "username" VARCHAR,
+            "password" VARCHAR
+        )');
+
+        $stmt = $db->prepare("INSERT INTO users ('username', 'password') VALUES (:username, :password)");
+        $stmt->bindValue(":username",$user,SQLITE3_TEXT);
+        $stmt->bindValue(":password",$pass,SQLITE3_TEXT);
+        $result = $stmt->execute();
+        
+        $_SESSION['loggedin'] = TRUE;
+        $_SESSION['username'] = $user;
+
+        header("Location: index.php");
 	}
 ?>
 <html>
 	<head>
-		<title>Login Page</title>
+		<title>Sign up Page</title>
 		<?php include "element-header.php" ?>
 	</head>
 	<body>

@@ -11,7 +11,8 @@
 		$_SESSION['loggedin'] = TRUE;
 		header("Location: index.php"); 
 	}
-	$db = new SQLite3("db.db");
+
+	$db = new SQLite3("roary.db");
 ?>
 <html>
 	<head>

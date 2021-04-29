@@ -1,8 +1,11 @@
 <?php
     session_start();
     $loggedin = false;
-    if (isset($_SESSION['loggedin'])) {
+    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == TRUE) {
         $loggedin = true;
+        $username = "unknown";
+        if (isset($_SESSION['username']))
+            $username = $_SESSION['username'];
     }
     if (isset($_POST['form_submitted']))
         include 'savepost.php';
@@ -52,7 +55,7 @@
                     <form action="" method="post">
                         <div class="mb-3">
                             <label for="fname" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="fname" name="fname" required>
+                            <input type="text" class="form-control" id="fname" name="fname" value="<?=$username?>" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="fmessage" class="form-label">Message</label>
