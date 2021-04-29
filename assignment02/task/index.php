@@ -1,29 +1,26 @@
 <?php
+    session_start();
+    $loggedin = false;
+    if (isset($_SESSION['loggedin'])) {
+        $loggedin = true;
+    }
     if (isset($_POST['form_submitted']))
         include 'savepost.php';
+    
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <title>ADIS Roary</title>
 
-        <!-- BOOTSTRAP & JQUERY -->		
-		<script src="../bootstrap/js/jquery-1.10.2.min.js"></script>
-		<script src="../bootstrap/js/jquery-3.5.1.min.js"></script>
-		<script src="../bootstrap/js/popper.min.js"crossorigin="anonymous"></script>
-		<script src="../bootstrap/js/bootstrap-beta.min.js" crossorigin="anonymous"></script>
-		<link rel="stylesheet" type="text/css" href="../bootstrap/js/DataTables/datatables.min.css"/>
-		<script type="text/javascript" src="../bootstrap/js/DataTables/datatables.min.js"></script>
-        <script src="../bootstrap/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css"/>
-
-        <!-- STYLE -->
-        <link rel="stylesheet" href="style.css">
+        <?php include "element-header.php" ?>
     </head>
     <body>
         <main>
             <h1>Roary</h1>
 
+            <?php if ($loggedin) { ?>
+            
             <!-- The container to create new roaries -->
             <div id="new-roary">
                 <div id="new-roary-header">
@@ -66,6 +63,19 @@
                     </form>
                 </div>
             </div>
+            <?php } else { ?>
+            <div class="session-container">
+                <div id="session-container-buttons">
+                    <a type="button" class="btn btn-primary" href="login.php">Login</a>
+                    <a type="button" class="btn btn-primary" href="signup.php">Sign up</a>
+                </div>
+
+                
+                <div class="signup-container" style="display: none;">
+                    
+                </div>
+            </div>
+            <?php } ?>
 
             <!-- The container of the posted roaries -->
             <div id="roary-list">

@@ -27,6 +27,24 @@ h1 {
     border-color: #128596;
 }
 
+/* Login/Sign up Form style */
+.login-container {
+    background-color: #F8F9FA;
+    border: 1px solid #DFDFDF;
+    border-radius: 4px;
+    padding: 20px;
+}
+#loginname, #loginpw {
+    margin-bottom: 20px;
+}
+.btn-instead {
+    padding-left: 15px;
+}
+.btn-back {
+    display: block;
+    padding-top: 15px;
+}
+
 /* Element style */
 #new-roary {
     background-color: #F8F9FA;
