@@ -7,31 +7,38 @@
 
 	if (isset($_POST['signup']))   // it checks whether the user clicked login button or not 
 	{
-        if($_POST['loginname']!= null && $_POST['loginpw']!= null)
-        {
-            $user = $_POST['loginname'];
-            $pass = $_POST['loginpw'];
-            $pass = password_hash($pass, PASSWORD_DEFAULT);
+        try{
+            if($_POST['loginname']!= null && $_POST['loginpw']!= null)
+            {
+                $user = $_POST['loginname'];
+                $pass = $_POST['loginpw'];
+                $pw_hash = password_hash($pass, PASSWORD_DEFAULT);
 
-            $db = new SQLite3("roary.db");
-            $db->query('CREATE TABLE IF NOT EXISTS "users"(
-                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                "username" VARCHAR UNIQUE,
-                "password" VARCHAR
-            )');
+                // Create (connect to) SQLite database in file
+                $db = new PDO('sqlite:roary.db');
+                // Set errormode to exceptions
+                $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $stmt = $db->prepare("INSERT INTO users ('username', 'password') VALUES (:username, :password)");
-            $stmt->bindValue(":username",$user,SQLITE3_TEXT);
-            $stmt->bindValue(":password",$pass,SQLITE3_TEXT);
-            $result = $stmt->execute();
-            
-            //TODO: check if successful
-            
-            $_SESSION['loggedin'] = TRUE;
-            $_SESSION['username'] = $user;
+                $db->exec('CREATE TABLE IF NOT EXISTS "users"(
+                    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    "username" VARCHAR UNIQUE,
+                    "password" VARCHAR
+                )');
+        
+                $stmt = $db->prepare("INSERT INTO users ('username', 'password') VALUES (:username, :password)");
+                $stmt->bindValue(":username",$user, SQLITE3_TEXT);
+                $stmt->bindValue(":password",$pw_hash, SQLITE3_TEXT);
+                $result = $stmt->execute();
+                                
+                $_SESSION['loggedin'] = TRUE;
+                $_SESSION['username'] = $user;
 
-            header("Location: index.php");
-        }else{
+                header("Location: index.php");
+            }else{
+                $error = 1;
+            }
+
+        }catch(Exception $e){
             $error = 1;
         }
 	}
@@ -47,10 +54,11 @@
                 <h1>Sign up</h1>
                 <form method="POST">
                     <?php if($error == 1){ ?>
-                        <div class="alert alert-danher" role="alert">
+                        <div class="alert alert-danger" role="alert">
                             Error: Missing data for signup. 
+                            
                         </div>
-                    <?php } ?>
+                    <?php echo $e; } ?>
                     <div class="form-group row">
                         <label for="loginname" class="col-sm-2 col-form-label">Username</label>
                         <div class="col-sm-10">

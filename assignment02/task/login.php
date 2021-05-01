@@ -6,41 +6,48 @@
 
 	if (isset($_POST['login']))   // it checks whether the user clicked login button or not 
 	{
+		try{
+			if($_POST['loginname'] != null && $_POST['loginpw'] != null) 
+			{
+				$user = $_POST['loginname'];
+				$pass = $_POST['loginpw'];
+				
+				// Create (connect to) SQLite database in file
+				$db = new PDO('sqlite:roary.db');
+				// Set errormode to exceptions
+				$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-		if($_POST['loginname'] != null && $_POST['loginpw'] != null) 
-		{
-			$user = $_POST['loginname'];
-			$pass = $_POST['loginpw'];
-			
-			$db = new SQLite3("roary.db");
+				//To make sure that the table exists + unqiue username only
+				$db->query('CREATE TABLE IF NOT EXISTS "users"(
+					"id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+					"username" VARCHAR UNIQUE, 
+					"password" VARCHAR
+				)');
 
-			//To make sure that the table exists - unqiue username only
-            $db->query('CREATE TABLE IF NOT EXISTS "users"(
-                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                "username" VARCHAR UNIQUE, 
-                "password" VARCHAR
-            )');
+				$stmt = $db->prepare('SELECT "password" FROM users WHERE username=:username');
+				$stmt->bindValue(':username', $user, SQLITE3_TEXT);
+				$result = $stmt->execute();
+				
+				
+				$rows = $stmt->fetchAll();
 
-			$stmt = $db->prepare('SELECT "password" FROM users WHERE username=:username');
-			$stmt->bindValue(':username', $user, SQLITE3_TEXT);
-			$result = $stmt->execute();
+				// get the hash for the username
+				$hash = $rows[0]['password'];
 
-			// Only fetch the first row because of the unqiue constraint there can only 0 or 1 user with this username
-			$row = $result->fetchArray();
-			$hash = 0;
+				if(password_verify($pass, $hash)){
+					// Login user and redirect
+					$_SESSION['loggedin'] = TRUE;
+					$_SESSION['username'] = $user;
+					header("Location: index.php");
+				}else{
+					$error = 2;
+				}
 
-			if($row != null){
-				$hash = row['password'];
-			}
-
-			if(password_verify($pass, $hash)){
-				$_SESSION['loggedin'] = TRUE;
-				header("Location: index.php"); 
 			}else{
-				$error = 2;
+				$error = 1;
 			}
 
-		}else{
+		}catch(Exception $e){
 			$error = 1;
 		}
 	}
@@ -57,11 +64,11 @@
 				<h1>Login</h1>
 				<form method="POST">
 					<?php if($error == 1){ ?>
-                        <div class="alert alert-danher" role="alert">
+                        <div class="alert alert-danger" role="alert">
 							Error: Missing data for login. 
                         </div>
                     <?php } else if($error == 2){ ?>
-						<div class="alert alert-danher" role="alert">
+						<div class="alert alert-danger" role="alert">
 							Error: Login unsuccessful!
                         </div>
 					<?php

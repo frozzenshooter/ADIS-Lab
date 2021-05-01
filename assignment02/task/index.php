@@ -39,7 +39,7 @@
                     <?php 
                         } else if (isset($_POST['form_submitted']) && $result == 1) {
                     ?>
-                    <div class="alert alert-danher" role="alert">
+                    <div class="alert alert-danger" role="alert">
                         Error: Your message could not be posted. Input invalid.
                     </div>
                     <?php 
