@@ -1,18 +1,49 @@
 <?php  
 	session_start();   // session starts with the help of this function 
-
+	$error = 0;
 	if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == TRUE)   // Checking whether the session is already there or not if 
 		header("Location: index.php"); 
 
 	if (isset($_POST['login']))   // it checks whether the user clicked login button or not 
 	{
-		$user = $_POST['loginname'];
-		$pass = $_POST['loginpw'];
-		$_SESSION['loggedin'] = TRUE;
-		header("Location: index.php"); 
+
+		if(isset($_POST['loginname'] && isset($_POST['loginpw'])){
+
+		
+			$user = $_POST['loginname'];
+			$pass = $_POST['loginpw'];
+		
+			
+			$db = new SQLite3("roary.db");
+
+			//To make sure that the table exists - unqiue username only
+            $db->query('CREATE TABLE IF NOT EXISTS "users"(
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "username" VARCHAR UNIQUE, 
+                "password" VARCHAR
+            )');
+
+			$stmt = $db->prepare('SELECT "username", "password" FROM users WHERE username=:username');
+			$stmt->bindValue(':username', $user, SQLITE3_TEXT);
+			$result = $stmt->execute();
+
+			while ($row = $results->fetchArray()) {
+				var_dump($row);
+			}
+
+			$isValidLogin = FALSE;
+
+			if($isValidLogin == TRUE){ 
+				$_SESSION['loggedin'] = TRUE;
+				header("Location: index.php"); 
+			}else{
+				$error = 2;
+			}
+		}else{
+			$error = 1;
+		}
 	}
 
-	$db = new SQLite3("roary.db");
 ?>
 <html>
 	<head>
@@ -24,6 +55,17 @@
 			<div class="login-container">
 				<h1>Login</h1>
 				<form method="POST">
+					<?php if($error == 1){ ?>
+                        <div class="alert alert-danher" role="alert">
+							Error: Missing data for login. 
+                        </div>
+                    <?php } else if($error == 2){ ?>
+						<div class="alert alert-danher" role="alert">
+							Error: Login unsuccessful!
+                        </div>
+					<?php
+						};
+					?>
 					<div class="form-group row">
 						<label for="loginname" class="col-sm-2 col-form-label">Username</label>
 						<div class="col-sm-10">

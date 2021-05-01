@@ -16,7 +16,7 @@
             $db = new SQLite3("roary.db");
             $db->query('CREATE TABLE IF NOT EXISTS "users"(
                 "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                "username" VARCHAR,
+                "username" VARCHAR UNIQUE,
                 "password" VARCHAR
             )');
 
@@ -25,6 +25,7 @@
             $stmt->bindValue(":password",$pass,SQLITE3_TEXT);
             $result = $stmt->execute();
             
+            //TODO: check if successful
             
             $_SESSION['loggedin'] = TRUE;
             $_SESSION['username'] = $user;
@@ -47,7 +48,7 @@
                 <form method="POST">
                     <?php if($error == 1){ ?>
                         <div class="alert alert-danher" role="alert">
-                            Error: Your message could not be posted. Input invalid.
+                            Error: Missing data for signup. 
                         </div>
                     <?php } ?>
                     <div class="form-group row">
