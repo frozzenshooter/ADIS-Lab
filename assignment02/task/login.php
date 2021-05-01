@@ -7,12 +7,10 @@
 	if (isset($_POST['login']))   // it checks whether the user clicked login button or not 
 	{
 
-		if(isset($_POST['loginname'] && isset($_POST['loginpw'])){
-
-		
+		if($_POST['loginname'] != null && $_POST['loginpw'] != null) 
+		{
 			$user = $_POST['loginname'];
 			$pass = $_POST['loginpw'];
-		
 			
 			$db = new SQLite3("roary.db");
 
@@ -23,22 +21,25 @@
                 "password" VARCHAR
             )');
 
-			$stmt = $db->prepare('SELECT "username", "password" FROM users WHERE username=:username');
+			$stmt = $db->prepare('SELECT "password" FROM users WHERE username=:username');
 			$stmt->bindValue(':username', $user, SQLITE3_TEXT);
 			$result = $stmt->execute();
 
-			while ($row = $results->fetchArray()) {
-				var_dump($row);
+			// Only fetch the first row because of the unqiue constraint there can only 0 or 1 user with this username
+			$row = $result->fetchArray();
+			$hash = 0;
+
+			if($row != null){
+				$hash = row['password'];
 			}
 
-			$isValidLogin = FALSE;
-
-			if($isValidLogin == TRUE){ 
+			if(password_verify($pass, $hash)){
 				$_SESSION['loggedin'] = TRUE;
 				header("Location: index.php"); 
 			}else{
 				$error = 2;
 			}
+
 		}else{
 			$error = 1;
 		}

@@ -7,7 +7,7 @@
 
 	if (isset($_POST['signup']))   // it checks whether the user clicked login button or not 
 	{
-        if(isset($_POST['loginname'] && isset($_POST['loginpw'])
+        if($_POST['loginname']!= null && $_POST['loginpw']!= null)
         {
             $user = $_POST['loginname'];
             $pass = $_POST['loginpw'];
