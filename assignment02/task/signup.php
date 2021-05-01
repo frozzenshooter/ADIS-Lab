@@ -6,7 +6,6 @@
 
 	if (isset($_POST['signup']))   // it checks whether the user clicked login button or not 
 	{
-        echo $_POST['loginname'];
 		$user = $_POST['loginname'];
 		$pass = $_POST['loginpw'];
         $pass = password_hash($pass, PASSWORD_DEFAULT);
@@ -22,6 +21,7 @@
         $stmt->bindValue(":username",$user,SQLITE3_TEXT);
         $stmt->bindValue(":password",$pass,SQLITE3_TEXT);
         $result = $stmt->execute();
+        
         
         $_SESSION['loggedin'] = TRUE;
         $_SESSION['username'] = $user;
@@ -42,13 +42,13 @@
                     <div class="form-group row">
                         <label for="loginname" class="col-sm-2 col-form-label">Username</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="loginname" value="" autocomplete="off">
+                            <input type="text" class="form-control" name="loginname" id="loginname" value="" autocomplete="off">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="loginpw" class="col-sm-2 col-form-label">Password</label>
                         <div class="col-sm-10">
-                            <input type="password" class="form-control" id="loginpw" placeholder="" autocomplete="off">
+                            <input type="password" class="form-control" name="loginpw" id="loginpw" placeholder="" autocomplete="off">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary" id="login-btn" name="signup" value="signup">Sign up</button>
