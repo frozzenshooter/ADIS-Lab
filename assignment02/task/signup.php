@@ -39,7 +39,7 @@
             }
 
         }catch(Exception $e){
-            $error = 1;
+            $error = 2; // insert failed
         }
 	}
 ?>
@@ -58,7 +58,12 @@
                             Error: Missing data for signup. 
                             
                         </div>
-                    <?php echo $e; } ?>
+                    <?php } else if($error == 2){ ?>
+                        <div class="alert alert-danger" role="alert">
+                            Error: Error inserting the data. Signup not possible. 
+                            
+                        </div>
+                    <?php } ?>
                     <div class="form-group row">
                         <label for="loginname" class="col-sm-2 col-form-label">Username</label>
                         <div class="col-sm-10">
