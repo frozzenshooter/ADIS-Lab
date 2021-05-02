@@ -63,6 +63,7 @@
                         </div>
                         <input type="hidden" name="form_submitted" value="1" />
                         <button type="submit" class="btn btn-primary">Post Message</button>
+                        <a class="btn btn-secondary" href="logout.php">Logout instead</a>                 
                     </form>
                 </div>
             </div>
@@ -82,8 +83,61 @@
 
             <!-- The container of the posted roaries -->
             <div id="roary-list">
-                <?php include 'getposts.php'; ?>
+                
             </div>
         </main>
+        <script>
+
+            function createRoary(roary){
+
+                const roaryListItem = document.createElement("DIV"); 
+                roaryListItem.className="roary-list-item";
+                
+                const roaryListItemHead = document.createElement("DIV"); 
+                roaryListItemHead.className="roary-list-item-head";
+                roaryListItemHead.innerHTML= roary.username;
+
+                roaryListItem.appendChild(roaryListItemHead);
+
+                const roaryListItemDate = document.createElement("DIV"); 
+                roaryListItemDate.className="roary-list-item-date";
+                roaryListItemDate.innerHTML= roary.timestamp;
+
+                roaryListItem.appendChild(roaryListItemDate);
+
+                const roaryListItemMsg = document.createElement("DIV"); 
+                roaryListItemMsg.className="roary-list-item-msg";
+                roaryListItemMsg.innerHTML= roary.message;
+
+                roaryListItem.appendChild(roaryListItemMsg);
+
+                return roaryListItem;
+            }
+
+            function updateRoarys(){
+                fetch('getposts.php')
+                .then(response => response.json())
+                .then(roarys => 
+                {
+
+                    // remove old posts and create new ones
+
+                    const roary_container = document.getElementById("roary-list");
+                    roary_container.innerHTML = "";
+                    for(let roary of roarys){
+                        roary_container.appendChild(createRoary(roary));
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                updateRoarys();
+
+                setInterval(() => {
+                    updateRoarys();
+                }, 5000);
+            }, false);
+
+        </script>
     </body>
 </html>

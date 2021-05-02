@@ -3,4 +3,3 @@
 
 <!-- STYLE & JS -->
 <link rel="stylesheet" href="style.css">
-<script src="functions.js"></script>
