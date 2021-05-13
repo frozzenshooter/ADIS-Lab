@@ -9,7 +9,7 @@ class Roar(models.Model):
     post = models.TextField(max_length=128)
     
     def __str__(self):
-        return self.author+"["+self.date+"]: "+self.post
+        return self.author.username+"["+self.date.strftime("%m/%d/%Y, %H:%M:%S")+"]: "+self.post
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -19,4 +19,4 @@ class Like(models.Model):
     ]
 
     def __str__(self):
-        return "Like: "+ self.user+" <3 "+self.roar
+        return self.user.username+" <3 "+ str(self.roar.id)
