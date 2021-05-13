@@ -1,0 +1,1 @@
+D:\virtualenv\ADIS\Scripts\activate.bat & python ./Roary/manage.py runserver
