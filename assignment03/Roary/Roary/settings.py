@@ -56,7 +56,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            str(BASE_DIR.joinpath('Roary','templates')),
+            str(BASE_DIR.joinpath('templates')),
             str(BASE_DIR.joinpath('roaryapp','templates'))
          ],
         'APP_DIRS': True,
