@@ -50,7 +50,24 @@
 
         roaryListItem.appendChild(roaryListItemMsg);
 
+        const roaryListItemLikes = document.createElement("DIV"); 
+        roaryListItemLikes.innerHTML= "Likes:" + roary.likes;
+        if(roary.userHasLiked){
+            roaryListItemLikes.className="badge badge-pill badge-primary like-button";
+        }else{
+            roaryListItemLikes.className="badge badge-pill badge-secondary like-button";
+        }
+        roaryListItemLikes.addEventListener("click", () => {handleLike(roary.id);});
+
+        roaryListItem.appendChild(roaryListItemLikes);
+
         return roaryListItem;
+    }
+
+    function handleLike(postId){
+        console.log("Like for the post:", postId)
+        // TODO: make a request to the server and update the like state 
+        // Care: it is required to handle an unauthenticated user -> perhpas give an error as response and handle it in the frontend 
     }
 
     function updateRoarys(){
@@ -58,8 +75,9 @@
         .then(response => response.json())
         .then(roarys => 
         {
-            // remove old posts and create new ones
+            console.log(roarys);
 
+            // remove old posts and create new ones
             const roary_container = document.getElementById("roary-container");
             roary_container.innerHTML = "";
             for(let roary of roarys){

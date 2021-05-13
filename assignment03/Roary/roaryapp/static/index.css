@@ -3,6 +3,10 @@
     padding-top: 80px;
 }
 
+.like-button{
+    cursor: pointer
+}
+
 #new-roary {
     background-color: #F8F9FA;
     border: 1px solid #DFDFDF;
