@@ -28,10 +28,11 @@
           </div>
         </div>
       {% endfor %}
-      <input type="submit" class="btn btn-primary" value="Login" />
+      <input type="submit" class="btn btn-primary" value="Login" /> <a class="ml-3 btn btn-secondary" href="{% url 'signup' %}">Signup instead</a>
 
     </form>
   </div>
+  <a class="link-secondary" href="{% url 'index' %}">Back...</a>
 </div>
 
 {% endblock %}
