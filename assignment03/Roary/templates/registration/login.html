@@ -1,6 +1,37 @@
-<h2>Log In</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log In</button>
-</form>
+
+{% extends "base.html" %}
+{% block content%}
+
+<div class="login-container p-3">
+  <h1>Login</h1>
+
+  <div class="card p-3">
+    <form role="form" class="form-horizontal" method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+      {% endfor %}
+      {% for field in form %}   
+        <div class="form-group row">
+          <label for="{{ field.html_name }}" class="col-sm-1 col-form-label">{{ field.label }}</label>
+          <div class="col-sm-11">
+            <input type="{{field.widget_type}}" class="form-control" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="" placeholder="{{field.label}}">
+            
+            {% for error in field.errors %}
+              <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+      <input type="submit" class="btn btn-primary" value="Login" />
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}
