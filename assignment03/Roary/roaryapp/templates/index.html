@@ -13,7 +13,7 @@
         </div>
         <div>
             {% if user.is_authenticated %}
-                <i class="pr-1 bi bi-person"></i></span><span class="pr-3">Hi {{ user.username }}!</span>
+                <i class="pr-1 bi bi-person"></i></span><span class="pr-3">Hi {{ user.username | escape }}!</span>
                 <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
@@ -22,9 +22,21 @@
         </div>
     </div>
 </nav>
-<div class="container roary-container" id="roary-container">
 
-</div>
+{% if user.is_authenticated %}
+    <div  class="container roary-container">
+        <p>TODO: POST CREATION</p>
+
+    </div>
+    <div class="container" id="roary-container">
+
+    </div>
+{% else %}
+    <div class="container roary-container" id="roary-container">
+
+    </div>
+{% endif %}
+
 <script>
       
       function createRoary(roary){
@@ -66,6 +78,7 @@
 
     function handleLike(postId){
         console.log("Like for the post:", postId)
+        alert("Posted liked: "+postId);
         // TODO: make a request to the server and update the like state 
         // Care: it is required to handle an unauthenticated user -> perhpas give an error as response and handle it in the frontend 
     }
