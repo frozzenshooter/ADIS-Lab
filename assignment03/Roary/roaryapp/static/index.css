@@ -7,6 +7,10 @@
     cursor: pointer
 }
 
+.roary-selector{
+    margin-bottom: 15px;
+}
+
 #new-roary {
     background-color: #F8F9FA;
     border: 1px solid #DFDFDF;

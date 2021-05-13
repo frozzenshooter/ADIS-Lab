@@ -36,6 +36,12 @@
             </form>
         </div>
     </div>
+    <div class="container roary-selector">
+            <select class="custom-select" id="roary-select">
+                <option value="1" selected>Show all </option>
+                <option value="2">Show favorites</option>
+            </select>
+    </div>
     <div class="container" id="roary-container">
 
     </div>
@@ -47,7 +53,9 @@
 
 <script>
       
-      function createRoary(roary){
+    let SHOW_ONLY_FAVORITES = false;
+
+    function createRoary(roary){
 
         const roaryListItem = document.createElement("DIV"); 
         roaryListItem.className="roary-list-item";
@@ -92,23 +100,51 @@
     }
 
     function updateRoarys(){
-        fetch('roars')
-        .then(response => response.json())
-        .then(roarys => 
-        {
-            console.log(roarys);
+        if(SHOW_ONLY_FAVORITES){
+            fetch('favorites')
+            .then(response => response.json())
+            .then(roarys => 
+            {
+                console.log(roarys);
 
-            // remove old posts and create new ones
-            const roary_container = document.getElementById("roary-container");
-            roary_container.innerHTML = "";
-            for(let roary of roarys){
-                roary_container.appendChild(createRoary(roary));
-            }
-        });
+                // remove old posts and create new ones
+                const roary_container = document.getElementById("roary-container");
+                roary_container.innerHTML = "";
+                for(let roary of roarys){
+                    roary_container.appendChild(createRoary(roary));
+                }
+            });
+        }else{
+            fetch('roars')
+            .then(response => response.json())
+            .then(roarys => 
+            {
+                console.log(roarys);
+
+                // remove old posts and create new ones
+                const roary_container = document.getElementById("roary-container");
+                roary_container.innerHTML = "";
+                for(let roary of roarys){
+                    roary_container.appendChild(createRoary(roary));
+                }
+            });
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         updateRoarys();
+
+        const selectElement = document.getElementById('roary-select');
+
+        selectElement.addEventListener('change', (event) => {
+            if(event.target.value == 2){
+                SHOW_ONLY_FAVORITES = true;
+            }else{
+                SHOW_ONLY_FAVORITES = false;
+            }
+
+            updateRoarys();
+        });
 
         setInterval(() => {
             updateRoarys();
