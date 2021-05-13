@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('', include('roaryapp.urls')),
-    path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('', include('roaryapp.urls')), # roary app itself to display and create roars
+    path('admin/', admin.site.urls), # admin console
+    path('accounts/', include('django.contrib.auth.urls')), # login/logout and password changes
+    path('accounts/', include('accounts.urls')), # required for the signup
 ]
