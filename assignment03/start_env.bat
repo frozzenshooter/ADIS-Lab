@@ -1,1 +1,1 @@
-CALL D:\virtualenv\ADIS\Scripts\activate.bat
+D:\virtualenv\ADIS\Scripts\activate.bat
