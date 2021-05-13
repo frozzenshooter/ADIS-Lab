@@ -8,3 +8,7 @@
 #### Setup of the project
 
 + Create the project: `django-admin startproject Roary`
++ Navigate into the Roary project folder `cd Roary`
++ Create the application itself `python manage.py startapp roaryapp`
+
+### 
