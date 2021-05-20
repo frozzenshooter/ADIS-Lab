@@ -55,6 +55,73 @@
       
     let SHOW_ONLY_FAVORITES = false;
 
+    function getDateString(date) {
+        let dd = date.getDate();
+
+        let mm = date.getMonth()+1; 
+        const yyyy = date.getFullYear();
+        let min = date.getMinutes();
+        let ho = date.getHours();
+
+        if(dd<10) 
+        {
+            dd=`0${dd}`;
+        } 
+
+        if(mm<10) 
+        {
+            mm=`0${mm}`;
+        } 
+
+        if (min < 10){
+            min=`0${min}`;
+        }
+
+        if (ho < 10){
+            ho=`0${ho}`;
+        }
+
+        return `${dd}/${mm}/${yyyy} - ${ho}:${min}`;
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function like( data = {}) {
+        url = '/likeRoar/';
+
+        const csrftoken = getCookie("csrftoken");
+        // Default options are marked with *
+        const response = await fetch(url, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrftoken
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: JSON.stringify(data) // body data type must match "Content-Type" header
+        });
+        return response; // parses JSON response into native JavaScript objects
+    }
+
     function createRoary(roary){
 
         const roaryListItem = document.createElement("DIV"); 
@@ -68,7 +135,8 @@
 
         const roaryListItemDate = document.createElement("DIV"); 
         roaryListItemDate.className="roary-list-item-date";
-        roaryListItemDate.innerHTML= roary.date;
+        const d = new Date(Date.parse(roary.date));
+        roaryListItemDate.innerHTML= getDateString(d);
 
         roaryListItem.appendChild(roaryListItemDate);
 
@@ -93,10 +161,12 @@
     }
 
     function handleLike(postId){
-        console.log("Like for the post:", postId)
-        alert("Posted liked: "+postId);
-        // TODO: make a request to the server and update the like state 
-        // Care: it is required to handle an unauthenticated user -> perhpas give an error as response and handle it in the frontend 
+
+        like({'roarId': postId}).then(response => {
+            if(response.ok){
+                updateRoarys();
+            }
+        });
     }
 
     function updateRoarys(){
@@ -108,7 +178,7 @@
                 // remove old posts and create new ones
                 const roary_container = document.getElementById("roary-container");
                 roary_container.innerHTML = "";
-                for(let roary of roarys){
+                for(let roary of roarys.reverse()){
                     roary_container.appendChild(createRoary(roary));
                 }
             });
@@ -120,7 +190,7 @@
                 // remove old posts and create new ones
                 const roary_container = document.getElementById("roary-container");
                 roary_container.innerHTML = "";
-                for(let roary of roarys){
+                for(let roary of roarys.reverse()){
                     roary_container.appendChild(createRoary(roary));
                 }
             });

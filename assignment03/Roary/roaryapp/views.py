@@ -7,6 +7,7 @@ from django.db.models import Count, F
 from django.db.models import Exists, OuterRef
 from django.utils.datastructures import MultiValueDictKeyError
 from django import forms
+import json
 
 class MessageForm(forms.Form):
     message = forms.CharField(label='message', max_length=128)
@@ -68,5 +69,23 @@ def postMessage(request):
 def error(request):
         return render(request, 'error.html')
 
+def likeRoar(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        json_data = json.loads(request.body)
+        try:
+            roarId = json_data['roarId']
+            
+            existingLike = Like.objects.filter(roar__id = roarId, user__id = request.user.id).exists()
+            if(existingLike):
+                Like.objects.filter(roar__id = roarId, user__id = request.user.id).delete()
+            else:
+                roar = Roar.objects.filter(id = roarId).first()
+                Like.objects.create(user=request.user, roar=roar)
 
+        except KeyError:
+            return HttpResponse(status=500)
+
+        return HttpResponse(status=200)
+
+    return HttpResponse(status=500)
 
