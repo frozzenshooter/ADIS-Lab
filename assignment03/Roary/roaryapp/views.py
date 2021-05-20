@@ -1,10 +1,15 @@
 from typing import Annotated
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Roar, Like
 from django.db.models import Count, F
 from django.db.models import Exists, OuterRef
 from django.utils.datastructures import MultiValueDictKeyError
+from django import forms
+
+class MessageForm(forms.Form):
+    message = forms.CharField(label='message', max_length=128)
 
 def index(request):
     return render(request, 'index.html')
@@ -42,3 +47,21 @@ def favorites(request):
         data = list(roars.values())
 
     return JsonResponse(data, safe=False)
+
+def postMessage(request):
+
+    if request.method == 'POST' and request.user.is_authenticated:
+        # create a form instance and populate it with data from the request:
+        form = MessageForm(request.POST)
+        if form.is_valid:
+            message = form.cleaned_data['message']
+            current_user_id = request.user.id 
+            roar = Roar.objects.create(current_user_id, message)
+            return JsonResponse(roar, safe=False)
+
+    return HttpResponse(status=500)
+
+
+
+
+

@@ -26,8 +26,7 @@
 {% if user.is_authenticated %}
     <div  class="container roary-container">
         <div class="roary-list-item">
-            <!--TODO: CHANGE ACTION TO CORRECT URL-->
-            <form action="" method="post" action="">
+            <form action="postMessage" method="post">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="message" class="form-label">Message</label>
