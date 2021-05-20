@@ -28,11 +28,12 @@
         <div class="roary-list-item">
             <!--TODO: CHANGE ACTION TO CORRECT URL-->
             <form action="" method="post" action="">
+                {% csrf_token %}
                 <div class="mb-3">
                     <label for="message" class="form-label">Message</label>
                     <textarea class="form-control" id="message" rows="3" name="message" required></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Post Message</button>               
+                <button type="submit" class="btn btn-primary" value="postMessage">Post Message</button>               
             </form>
         </div>
     </div>
@@ -105,8 +106,6 @@
             .then(response => response.json())
             .then(roarys => 
             {
-                console.log(roarys);
-
                 // remove old posts and create new ones
                 const roary_container = document.getElementById("roary-container");
                 roary_container.innerHTML = "";
@@ -119,8 +118,6 @@
             .then(response => response.json())
             .then(roarys => 
             {
-                console.log(roarys);
-
                 // remove old posts and create new ones
                 const roary_container = document.getElementById("roary-container");
                 roary_container.innerHTML = "";
