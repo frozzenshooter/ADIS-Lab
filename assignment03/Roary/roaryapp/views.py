@@ -48,20 +48,25 @@ def favorites(request):
 
     return JsonResponse(data, safe=False)
 
+
+
 def postMessage(request):
 
     if request.method == 'POST' and request.user.is_authenticated:
         # create a form instance and populate it with data from the request:
         form = MessageForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             message = form.cleaned_data['message']
-            current_user_id = request.user.id 
-            roar = Roar.objects.create(current_user_id, message)
-            return JsonResponse(roar, safe=False)
+            roar = Roar.objects.create(author=request.user, post=message)
+            return HttpResponseRedirect("/")
+        else:
+            return HttpResponseRedirect("/error")
 
     return HttpResponse(status=500)
 
 
+def error(request):
+        return render(request, 'error.html')
 
 
 

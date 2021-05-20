@@ -51,3 +51,11 @@
 .roary-list-item-msg {
     margin-top: 10px;
 }
+
+#error-message-container{
+    display: flex;
+    flex-direction: column;
+    padding-left: 2%;
+    padding-right: 2%;
+    align-items: center;
+}

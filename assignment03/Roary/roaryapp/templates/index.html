@@ -26,11 +26,11 @@
 {% if user.is_authenticated %}
     <div  class="container roary-container">
         <div class="roary-list-item">
-            <form action="postMessage" method="post">
+            <form action="/postMessage/" method="post" id="postMessage">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="message" class="form-label">Message</label>
-                    <textarea class="form-control" id="message" rows="3" name="message" required></textarea>
+                    <textarea class="form-control" id="message" rows="3" name="message" required maxlength=128></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary" value="postMessage">Post Message</button>               
             </form>

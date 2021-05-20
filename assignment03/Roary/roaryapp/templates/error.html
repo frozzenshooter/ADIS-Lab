@@ -1,0 +1,14 @@
+<!-- templates/home.html-->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div id="error-message-container">
+    <div class="alert alert-danger">
+        <strong>The message was too long!</strong>
+    </div>
+    <a class="link-secondary" href="{% url 'index' %}">Back...</a>
+</div>
+
+{% endblock %}
