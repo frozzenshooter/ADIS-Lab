@@ -114,7 +114,7 @@
                                         </div>
 
                                         <div class="float-right">
-                                            <button type="submit" name="submit" class="btn btn-info">Post Roar</button>
+                                            <button type="submit" class="btn btn-info">Post Roar</button>
                                         </div>
                                     </form>
                                 </div>
@@ -192,37 +192,54 @@
                 }
             }
 
+            function getFetchConfiguration(jsonBody){
+                return {
+                    method: 'POST',
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'same-origin', // include, *same-origin, omit
+                    headers: {
+                        'Content-Type': 'application/json',
+                        //'X-CSRFToken': csrftoken
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                    body: jsonBody // body data type must match "Content-Type" header
+                };
+            }
+
             async function login(e)
             {
                 e.preventDefault();
-                // todo: login by sending an ajax request to the server
+
                 const email = document.querySelector('#roary-login input[name="email"]').value;
                 const password = document.querySelector('#roary-login input[name="password"]').value;
+
+                //Validation if empty
                 const error = (email === "" || password === "");
 
                 if (!error) {
-                    const data = {email, password};
-                    const json = JSON.stringify(data);
-                    await fetch('/login', {
-                        method: 'POST',
-                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                        credentials: 'same-origin', // include, *same-origin, omit
-                        headers: {
-                            'Content-Type': 'application/json',
-                            // 'Content-Type': 'application/x-www-form-urlencoded',
-                            //'X-CSRFToken': csrftoken
-                        },
-                        redirect: 'follow', // manual, *follow, error
-                        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                        body: json // body data type must match "Content-Type" header
-                    }).then( (response) => {
-                        response.json().then((username) =>{
-                            document.querySelector('#roary-login input[name="email"]').classList.remove('is-invalid');
-                            document.querySelector('#roary-login input[name="email"]').value = '';
-                            localStorage.setItem('username', username);
-                        })
-                    }).catch(err => console.log(err))
-                    .finally( () => location.hash = '/' );
+
+                    const jsonBody = JSON.stringify({ email, password });
+
+                    try {
+                        const response = await fetch('/login', getFetchConfiguration(jsonBody));
+
+                        if (!response.ok)
+                            throw new Error(response.statusText);
+
+                        const username = await response.json();
+                        console.log(username);
+                        document.querySelector('#roary-login input[name="email"]').classList.remove('is-invalid');
+                        document.querySelector('#roary-login input[name="email"]').value = '';
+                        localStorage.setItem('username', username);
+                        
+                        // redirect to home
+                        location.hash = '/';
+
+                    }catch(error){
+                        console.log(error);
+                    }
+                        
                 } else {
                     document.querySelector('#roary-login input[name="email"]').classList.add('is-invalid');
                 }
@@ -242,36 +259,30 @@
                 }
 
                 const data = {username, email, password}
-                const json = JSON.stringify(data);
+                const jsonBody = JSON.stringify(data);
 
-                await fetch("/signup", {
-                    method: 'POST',
-                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                        credentials: 'same-origin', // include, *same-origin, omit
-                        headers: {
-                        'Content-Type': 'application/json',
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
-                        //'X-CSRFToken': csrftoken
-                    },
-                    redirect: 'follow', // manual, *follow, error
-                        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                        body: json // body data type must match "Content-Type" header
-                }).then( (res) => {
-                    res.json().then((error) => {
-                        const message = error ? 'Username is already taken' : 'Successfully registered';
+                try {
+                    const response = await fetch("/signup", getFetchConfiguration(jsonBody));
 
-                        const response = document.createElement('div');
-                        response.className = 'alert';
-                        response.innerText = message;
-                        response.classList.add(error ? 'alert-danger' : 'alert-success');
+                    if (!response.ok)
+                            throw new Error(response.statusText);
+                    
+                    const error = await response.json();
+                    const message = error ? 'Error creating the account' : 'Successfully registered';
 
-                        // remove previous alert
-                        document.querySelectorAll('#roary-register div.alert').forEach(e => e.parentNode.removeChild(e));
-                        // display new alert
-                        document.querySelector('#roary-register form').insertAdjacentElement('afterBegin', response);
-                    });
-                }).catch( err => console.log(err));
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'alert';
+                    responseDiv.innerText = message;
+                    responseDiv.classList.add(error ? 'alert-danger' : 'alert-success');
 
+                    // remove previous alert
+                    document.querySelectorAll('#roary-register div.alert').forEach(e => e.parentNode.removeChild(e));
+                    // display new alert
+                    document.querySelector('#roary-register form').insertAdjacentElement('afterBegin', responseDiv);
+
+                }catch(ex){
+                    console.log(ex);
+                }
             }
 
             async function logout() {
@@ -280,22 +291,17 @@
                 const data = {username};
                 const json = JSON.stringify(data);
 
-                await fetch("/logout", {
-                    method: 'POST',
-                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                    credentials: 'same-origin', // include, *same-origin, omit
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
-                        //'X-CSRFToken': csrftoken
-                    },
-                    redirect: 'follow', // manual, *follow, error
-                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                    body: json // body data type must match "Content-Type" header
-                }).then((res) => {
+                try {
+                    const response = await fetch("/logout", getFetchConfiguration(json));
+                    if (!response.ok)
+                                throw new Error(response.statusText);
+                    
                     localStorage.clear();
                     location.hash = '/';
-                }).catch((err) => console.log(err));
+                    
+                }catch(error){
+                    console.log(error);
+                }
             }
 
             async function postRoar(e) {
@@ -306,30 +312,30 @@
                 const error = message.length > 128;
                 const response = error ? 'Message is too long' : '';
 
-                if (!error) {
-                    document.querySelector('#roar-form textarea[name="message"]').classList.remove('is-invalid');
-                    document.querySelector('#roar-form textarea[name="message"]').value = '';
-                } else {
+                if (error) {
                     document.querySelector('#roar-form .invalid-feedback').textContent = response;
                     document.querySelector('#roar-form textarea[name="message"]').classList.add('is-invalid');
 
+                } else {
+                    document.querySelector('#roar-form textarea[name="message"]').classList.remove('is-invalid');
+                    document.querySelector('#roar-form textarea[name="message"]').value = '';
+
                     const username = localStorage.getItem('username');
                     const data = {username, message};
-                    const json = JSON.stringify(data);
+                    const jsonBody = JSON.stringify(data);
 
-                    await fetch("/postRoar", {
-                        method: 'POST',
-                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                        credentials: 'same-origin', // include, *same-origin, omit
-                        headers: {
-                            'Content-Type': 'application/json',
-                            // 'Content-Type': 'application/x-www-form-urlencoded',
-                            //'X-CSRFToken': csrftoken
-                        },
-                        redirect: 'follow', // manual, *follow, error
-                        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                        body: json // body data type must match "Content-Type" header
-                    }).then( (res) => fetchRoars() );
+                    try{
+                        const response = await fetch("/postRoar", getFetchConfiguration(jsonBody));
+
+                        if (!response.ok)
+                                throw new Error(response.statusText);
+                        
+                        fetchRoars();
+
+                    }catch(ex){
+                        console.log(ex);
+                    }
+
                 }
             }
 
@@ -337,45 +343,36 @@
                 if (!localStorage.getItem('username')) {
                     return;
                 }
-                const username = localStorage.getItem('username');
-                const data = {username};
-                const json = JSON.stringify(data);
-                const roar = (await fetch("/roars", {
-                    method: 'GET',
-                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                    credentials: 'same-origin', // include, *same-origin, omit
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
-                        //'X-CSRFToken': csrftoken
-                    },
-                    redirect: 'follow', // manual, *follow, error
-                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                    body: json // body data type must match "Content-Type" header
-                })).json();
-                console.log(roar);
+
+                // simple get request
+                const response = await fetch("/roars");
+                const roars = await response.json();
+
                 //TODO Further Roar Processing
 
+                let likedRoars = false;
 
                 if (location.hash === '#/liked') {
                     // show only liked roars
-                    roar.liked = true;
+                    likedRoars = true;
                 }
 
-                document.querySelector('#roar-list').insertAdjacentHTML('afterBegin', `
-                    <div class="card mb-1">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                ${roar.username}
-                    
-                                <small class="text-muted float-right">${roar.date.toLocaleString('en-GB')}</small>
-                            </h5>
-                    
-                            <p class="card-text">${roar.message}</p>
-                            <button class="btn badge badge-pill ${roar.liked ? 'badge-danger' : 'badge-secondary'}"><b>&#10084;&emsp;${roar.likes}</b></button>
+                for(const roar of roars){
+                    document.querySelector('#roar-list').insertAdjacentHTML('beforeend', `
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    ${roar.username}
+                        
+                                    <small class="text-muted float-right">${roar.date.toLocaleString('en-GB')}</small>
+                                </h5>
+                        
+                                <p class="card-text">${roar.message}</p>
+                                <button class="btn badge badge-pill ${likedRoars ? 'badge-danger' : 'badge-secondary'}"><b>&#10084;&emsp;${roar.likes}</b></button>
+                            </div>
                         </div>
-                    </div>
-                `);
+                    `);
+                }
             }
 
             document.querySelector('#roary-login form').addEventListener('submit', login);
