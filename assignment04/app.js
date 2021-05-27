@@ -2,11 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const app = express();
+const session = require('express-session')
 const port = 3000;
 
 
 app.use('/', express.static('public'));
 
+app.use(session({
+    secret: 'ranomd_string',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}));
 app.post("/login", jsonParser, (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
