@@ -192,46 +192,110 @@
                 }
             }
 
-            async function login(e) {
+            async function login(e)
+            {
                 e.preventDefault();
-
                 // todo: login by sending an ajax request to the server
-                const error = Math.random() > 0.5;
-                const username = 'Example User';
+                const email = document.querySelector('#roary-login input[name="email"]').value;
+                const password = document.querySelector('#roary-login input[name="password"]').value;
+                const error = (email === "" || password === "");
 
                 if (!error) {
-                    document.querySelector('#roary-login input[name="email"]').classList.remove('is-invalid');
-                    document.querySelector('#roary-login input[name="email"]').value = '';
-                    localStorage.setItem('username', username);
-                    location.hash = '/';
+                    const data = {email, password};
+                    const json = JSON.stringify(data);
+                    await fetch('/login', {
+                        method: 'POST',
+                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                        credentials: 'same-origin', // include, *same-origin, omit
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Content-Type': 'application/x-www-form-urlencoded',
+                            //'X-CSRFToken': csrftoken
+                        },
+                        redirect: 'follow', // manual, *follow, error
+                        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                        body: json // body data type must match "Content-Type" header
+                    }).then( (response) => {
+                        response.json().then((username) =>{
+                            document.querySelector('#roary-login input[name="email"]').classList.remove('is-invalid');
+                            document.querySelector('#roary-login input[name="email"]').value = '';
+                            localStorage.setItem('username', username);
+                        })
+                    }).catch(err => console.log(err))
+                    .finally( () => location.hash = '/' );
                 } else {
                     document.querySelector('#roary-login input[name="email"]').classList.add('is-invalid');
                 }
             }
 
+
             async function register(e) {
                 e.preventDefault();
 
-                // todo: register by sending an ajax request to the server
-                const error = Math.random() > 0.5;
-                const message = error ? 'Username is already taken' : 'Successfully registered';
+                const username = document.querySelector('#roary-register input[name="username"]').value;
+                const email = document.querySelector('#roary-register input[name="email"]').value;
+                const password = document.querySelector('#roary-register input[name="password"]').value;
 
-                const response = document.createElement('div');
-                response.className = 'alert';
-                response.innerText = message;
-                response.classList.add(error ? 'alert-danger' : 'alert-success');
+                //TODO: Lokale Fehlerbehandlung, wenn Signup Parameter nicht passen
+                if (username === "" || email === "" || password === ""){
+                    return;
+                }
 
-                // remove previous alert
-                document.querySelectorAll('#roary-register div.alert').forEach(e => e.parentNode.removeChild(e));
-                // display new alert
-                document.querySelector('#roary-register form').insertAdjacentElement('afterBegin', response);
+                const data = {username, email, password}
+                const json = JSON.stringify(data);
+
+                await fetch("/signup", {
+                    method: 'POST',
+                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                        credentials: 'same-origin', // include, *same-origin, omit
+                        headers: {
+                        'Content-Type': 'application/json',
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                        //'X-CSRFToken': csrftoken
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                        body: json // body data type must match "Content-Type" header
+                }).then( (res) => {
+                    res.json().then((error) => {
+                        const message = error ? 'Username is already taken' : 'Successfully registered';
+
+                        const response = document.createElement('div');
+                        response.className = 'alert';
+                        response.innerText = message;
+                        response.classList.add(error ? 'alert-danger' : 'alert-success');
+
+                        // remove previous alert
+                        document.querySelectorAll('#roary-register div.alert').forEach(e => e.parentNode.removeChild(e));
+                        // display new alert
+                        document.querySelector('#roary-register form').insertAdjacentElement('afterBegin', response);
+                    });
+                }).catch( err => console.log(err));
+
             }
 
             async function logout() {
                 // todo: logout by sending an ajax request to the server
+                const username = localStorage.getItem('username');
+                const data = {username};
+                const json = JSON.stringify(data);
 
-                localStorage.clear();
-                location.hash = '/';
+                await fetch("/logout", {
+                    method: 'POST',
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'same-origin', // include, *same-origin, omit
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                        //'X-CSRFToken': csrftoken
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                    body: json // body data type must match "Content-Type" header
+                }).then((res) => {
+                    localStorage.clear();
+                    location.hash = '/';
+                }).catch((err) => console.log(err));
             }
 
             async function postRoar(e) {
@@ -248,6 +312,24 @@
                 } else {
                     document.querySelector('#roar-form .invalid-feedback').textContent = response;
                     document.querySelector('#roar-form textarea[name="message"]').classList.add('is-invalid');
+
+                    const username = localStorage.getItem('username');
+                    const data = {username, message};
+                    const json = JSON.stringify(data);
+
+                    await fetch("/postRoar", {
+                        method: 'POST',
+                        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                        credentials: 'same-origin', // include, *same-origin, omit
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Content-Type': 'application/x-www-form-urlencoded',
+                            //'X-CSRFToken': csrftoken
+                        },
+                        redirect: 'follow', // manual, *follow, error
+                        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                        body: json // body data type must match "Content-Type" header
+                    }).then( (res) => fetchRoars() );
                 }
             }
 
@@ -255,16 +337,25 @@
                 if (!localStorage.getItem('username')) {
                     return;
                 }
+                const username = localStorage.getItem('username');
+                const data = {username};
+                const json = JSON.stringify(data);
+                const roar = (await fetch("/roars", {
+                    method: 'GET',
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'same-origin', // include, *same-origin, omit
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                        //'X-CSRFToken': csrftoken
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                    body: json // body data type must match "Content-Type" header
+                })).json();
+                console.log(roar);
+                //TODO Further Roar Processing
 
-                // todo: replace by appropriate ajax requests to fetch new roars
-
-                const roar = {
-                    username: Math.random().toString(36).substring(2, 15),
-                    date: new Date(),
-                    message: Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2),
-                    likes: Math.round(Math.random() * 128),
-                    liked: Math.random() > 0.5
-                };
 
                 if (location.hash === '#/liked') {
                     // show only liked roars
