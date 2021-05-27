@@ -38,7 +38,9 @@ app.post("/logout", jsonParser, (req, res) => {
 })
 
 app.post("/postRoar", jsonParser, (req, res) =>  {
-
+  const username = req.body.username;
+  const message = req.body.message;
+  //TODO Safe Roar
 })
 
 // Last route to handle 404
