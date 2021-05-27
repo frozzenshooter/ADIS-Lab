@@ -1,16 +1,26 @@
 const express = require('express');
 const app = express();
-const session = require('express-session')
 const port = 3000;
+
+// HTTPS
+const fs = require('fs');
+const key = fs.readFileSync('./cert/localkey.pem');
+const cert = fs.readFileSync('./cert/localcert.pem');
+const https = require('https');
+
+// Session 
+const session = require('express-session')
 const uuid = require('uuid').v4
 
 
+//HTTPS init
+const server = https.createServer({key: key, cert: cert }, app);
 
 // Server the index html as static file
 app.use('/', express.static('public'));
 
 // Parse the json body of the request
-app.use(express.json())
+app.use(express.json());
 
 // Session handling
 app.use(session({
@@ -19,8 +29,8 @@ app.use(session({
     },
     secret: 'keyboard cat', // For a production environment use a random string via a environment variable 
     resave: true,
-    cookie: { secure: false } // TODO: set to true when using https
-}))
+    cookie: { secure: true }
+}));
 
 //Login of a user
 app.post("/login", (req, res) => {
@@ -36,6 +46,8 @@ app.post("/login", (req, res) => {
       const username = "Dummy Name";
       req.session.authenticated = true;
       req.session.username = username;
+
+      console.log(req.session);
    
 
       res.status(200).json(username).send();
@@ -50,6 +62,7 @@ app.post("/signup", (req, res) =>{
     const username = req.body.username;
     const password = req.body.password;
     
+    console.log(req.session);
     
     //TODO: Sign the User up, send error if username already taken
     const error = false;
@@ -58,6 +71,8 @@ app.post("/signup", (req, res) =>{
 
 // Logout of a user
 app.get("/logout", (req, res) => {
+
+    console.log(req.session);
 
     req.session.destroy();
     res.status(200).send();
@@ -68,8 +83,11 @@ app.post("/postRoar", (req, res) =>  {
     const username = req.body.username;
     const message = req.body.message;
 
+    console.log(req.session);
+
     if(req.session?.authenticated){
         //TODO Save Roar
+        console.log("auth");
         res.status(200).send();
     }else{
         res.status(401).send();
@@ -89,6 +107,6 @@ app.get('*', function(req, res){
     res.status(404).send('Error 404 - Page not found');
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
