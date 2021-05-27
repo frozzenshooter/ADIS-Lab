@@ -40,7 +40,12 @@ app.post("/logout", jsonParser, (req, res) => {
 app.post("/postRoar", jsonParser, (req, res) =>  {
   const username = req.body.username;
   const message = req.body.message;
-  //TODO Safe Roar
+  //TODO Save Roar
+})
+
+app.get("/roars", jsonParser, (req, res) => {
+  const username = req.body.username;
+  //TODO Fetch Roars from DB and send
 })
 
 // Last route to handle 404
