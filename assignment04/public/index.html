@@ -268,31 +268,32 @@
                             throw new Error(response.statusText);
                     
                     const error = await response.json();
-                    const message = error ? 'Error creating the account' : 'Successfully registered';
+                    if(error){
+                        const message = error ? 'Error creating the account' : 'Successfully registered';
 
-                    const responseDiv = document.createElement('div');
-                    responseDiv.className = 'alert';
-                    responseDiv.innerText = message;
-                    responseDiv.classList.add(error ? 'alert-danger' : 'alert-success');
+                        const responseDiv = document.createElement('div');
+                        responseDiv.className = 'alert';
+                        responseDiv.innerText = message;
+                        responseDiv.classList.add(error ? 'alert-danger' : 'alert-success');
 
-                    // remove previous alert
-                    document.querySelectorAll('#roary-register div.alert').forEach(e => e.parentNode.removeChild(e));
-                    // display new alert
-                    document.querySelector('#roary-register form').insertAdjacentElement('afterBegin', responseDiv);
-
+                        // remove previous alert
+                        document.querySelectorAll('#roary-register div.alert').forEach(e => e.parentNode.removeChild(e));
+                        // display new alert
+                        document.querySelector('#roary-register form').insertAdjacentElement('afterBegin', responseDiv);
+                    }else{
+                        document.querySelector('#roary-register input[name="username"]').value="";
+                        document.querySelector('#roary-register input[name="email"]').value="";
+                        document.querySelector('#roary-register input[name="password"]').value="";
+                        location.hash = '/login';
+                    }
                 }catch(ex){
                     console.log(ex);
                 }
             }
 
             async function logout() {
-                // todo: logout by sending an ajax request to the server
-                const username = localStorage.getItem('username');
-                const data = {username};
-                const json = JSON.stringify(data);
-
                 try {
-                    const response = await fetch("/logout", getFetchConfiguration(json));
+                    const response = await fetch("/logout");
                     if (!response.ok)
                                 throw new Error(response.statusText);
                     

@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const sqlite3 = require('sqlite3').verbose();
+
 let db = new sqlite3.Database('roary.db', (err) => {
     if (err) {
         console.lerror(err.message);

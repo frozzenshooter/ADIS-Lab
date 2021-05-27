@@ -1,65 +1,85 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
 const app = express();
 const session = require('express-session')
 const port = 3000;
+const uuid = require('uuid').v4
 
 
+
+// Server the index html as static file
 app.use('/', express.static('public'));
 
-app.use(session({
-    secret: 'ranomd_string',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
-}));
+// Parse the json body of the request
+app.use(express.json())
 
-app.post("/login", jsonParser, (req, res) => {
+// Session handling
+app.use(session({
+    genid: (req) => {
+      return uuid(); // use UUIDs for session IDs
+    },
+    secret: 'keyboard cat', // For a production environment use a random string via a environment variable 
+    resave: true,
+    cookie: { secure: false } // TODO: set to true when using https
+}))
+
+//Login of a user
+app.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    console.log("Email:", email, "PW:", password);
+    req.session.authenticated = false;
 
     //TODO: Check if Login Info is correct
     const success = true;
     //TODO: Fetch Username from Database
     if(success) {
       const username = "Dummy Name";
+      req.session.authenticated = true;
+      req.session.username = username;
+   
+
       res.status(200).json(username).send();
     }else {
       res.status(403).send();
     }
 })
 
-app.post("/signup", jsonParser, (req, res) =>{
+// Signup of a user
+app.post("/signup", (req, res) =>{
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
-
-    console.log("Email:", email, "password", password, "username", username);
-
+    
+    
     //TODO: Sign the User up, send error if username already taken
     const error = false;
     res.status(200).json(error).send();
 })
 
-app.post("/logout", jsonParser, (req, res) => {
-    const username = req.body.username;
-    console.log("username", username);
-    //TODO Sign this User Out
+// Logout of a user
+app.get("/logout", (req, res) => {
+
+    req.session.destroy();
     res.status(200).send();
 })
 
-app.post("/postRoar", jsonParser, (req, res) =>  {
+// Post a roar
+app.post("/postRoar", (req, res) =>  {
     const username = req.body.username;
     const message = req.body.message;
-    console.log("username", username, "message", message);
-    //TODO Save Roar
-    res.status(200).send();
+
+    if(req.session?.authenticated){
+        //TODO Save Roar
+        res.status(200).send();
+    }else{
+        res.status(401).send();
+    }
+
+
 })
 
-app.get("/roars", jsonParser, (req, res) => {
+// Get all roars
+app.get("/roars", (req, res) => {
     //TODO Fetch Roars from DB and send
     res.status(200).send();
 })
