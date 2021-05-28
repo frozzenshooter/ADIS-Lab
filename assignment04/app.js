@@ -10,11 +10,18 @@ const https = require('https');
 
 // Session 
 const session = require('express-session')
-const uuid = require('uuid').v4
+const uuid = require('uuid').v4;
 
+//Database
+const {getUser, signup, postRoar, getRoars} = require('./database');
+
+//Passwords
+const bcrypt = require('bcryptjs');
+const SALT_ROUNDS = 10;
 
 //HTTPS init
 const server = https.createServer({key: key, cert: cert }, app);
+
 
 // Server the index html as static file
 app.use('/', express.static('public'));
@@ -29,6 +36,7 @@ app.use(session({
     },
     secret: 'keyboard cat', // For a production environment use a random string via a environment variable 
     resave: true,
+    saveUninitialized: true, // hold all sessions
     cookie: { secure: true }
 }));
 
@@ -36,43 +44,42 @@ app.use(session({
 app.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-
-    req.session.authenticated = false;
-
-    //TODO: Check if Login Info is correct
-    const success = true;
-    //TODO: Fetch Username from Database
-    if(success) {
-      const username = "Dummy Name";
-      req.session.authenticated = true;
-      req.session.username = username;
-
-      console.log(req.session);
    
+    req.session.authenticated = false;
+    req.session.username = "";
+    
+    getUser(email, (err, user) => {
+        if(err) return res.status(500).send("Server error!");
+        if(!user) return res.status(401).send("Unauthorized!");
 
-      res.status(200).json(username).send();
-    }else {
-      res.status(403).send();
-    }
+        const match = bcrypt.compareSync(password, user.password);
+        if(!match) return res.status(401).send("Unauthorized!");
+        req.session.authenticated = true;
+        req.session.username = user.username;
+        res.status(200).json(user.username);
+    });
 })
 
 // Signup of a user
 app.post("/signup", (req, res) =>{
     const email = req.body.email;
     const username = req.body.username;
-    const password = req.body.password;
-    
-    console.log(req.session);
-    
-    //TODO: Sign the User up, send error if username already taken
-    const error = false;
-    res.status(200).json(error).send();
+    const password = req.body.password;7
+
+    const salt = bcrypt.genSaltSync(SALT_ROUNDS);
+    const hash = bcrypt.hashSync(password);
+
+    signup(username, email, hash, (err) => {
+        if(err) {
+            console.log(err);
+            return res.status(200).json(true);
+        }
+        res.status(200).json(false);
+    });
 })
 
 // Logout of a user
 app.get("/logout", (req, res) => {
-
-    console.log(req.session);
 
     req.session.destroy();
     res.status(200).send();
@@ -80,26 +87,26 @@ app.get("/logout", (req, res) => {
 
 // Post a roar
 app.post("/postRoar", (req, res) =>  {
-    const username = req.body.username;
     const message = req.body.message;
-
-    console.log(req.session);
-
     if(req.session?.authenticated){
-        //TODO Save Roar
-        console.log("auth");
-        res.status(200).send();
+        postRoar(req.session.username, message, (er) => {
+            if(er) return res.status(500).send();
+
+            res.status(200).send();
+        });
     }else{
         res.status(401).send();
     }
-
-
 })
 
 // Get all roars
 app.get("/roars", (req, res) => {
-    //TODO Fetch Roars from DB and send
-    res.status(200).send();
+
+    getRoars((err, rows) => {
+        if(err) return res.status(500).send();
+
+        res.status(200).json(rows);
+    });
 })
 
 // Last route to handle 404
