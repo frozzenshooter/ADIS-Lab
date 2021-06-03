@@ -424,6 +424,30 @@
             window.addEventListener('hashchange', routeChanged, false);
             setInterval(fetchRoars, 10000);
             routeChanged();
+
+
+            // if the browser supports service workers register
+            
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service_worker.js', {
+                    scope: ''
+                }).then(function(reg) {
+                    // registration worked, hurray!
+                    console.log('Registration succeeded. Scope is ' + reg.scope);
+
+                    if (reg.installing) {
+                        console.log('Service worker installing');
+                    } else if (reg.waiting) {
+                        console.log('Service worker installed');
+                    } else if (reg.active) {
+                        console.log('Service worker active');
+                    }
+                }).catch(function(error) {
+                    console.log('Registration failed with ' + error);
+                });
+            }
+
         </script>
+        <script src="service_worker.js"></script>
     </body>
 </html>
