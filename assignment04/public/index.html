@@ -370,6 +370,20 @@
                 return dateTimeString;
             }
 
+            async function likeRoary(id){
+                if (!localStorage.getItem('username')) {   
+                    return;
+                }
+                const jsonBody = JSON.stringify({ roary_id: id });
+
+                const response = await fetch('like', getFetchConfiguration(jsonBody));
+                if (response.ok){
+                    fetchRoars();
+                }else{
+                    console.log("Like failed");
+                }
+            }
+
             async function fetchRoars() {
                 if (!localStorage.getItem('username')) {
                     // this is wrong - still show roarys but you cant filter for liked ones
@@ -404,7 +418,7 @@
                                 </h5>
                         
                                 <p class="card-text">${roar.message}</p>
-                                <button class="btn badge badge-pill ${likedRoars ? 'badge-danger' : 'badge-secondary'}"><b>&#10084;&emsp;${roar.likes}</b></button>
+                                <button onclick="likeRoary(${roar.roary_id})" class="btn badge badge-pill ${likedRoars ? 'badge-danger' : 'badge-secondary'}"><b>&#10084;&emsp;${roar.likes}</b></button>
                             </div>
                         </div>
                     `);

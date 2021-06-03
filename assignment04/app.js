@@ -13,7 +13,7 @@ const session = require('express-session')
 const uuid = require('uuid').v4;
 
 //Database
-const {getUser, signup, postRoar, getRoars} = require('./database');
+const {getUser, signup, postRoar, getRoars, likeRoary} = require('./database');
 
 //Passwords
 const bcrypt = require('bcryptjs');
@@ -58,7 +58,7 @@ app.post("/login", (req, res) => {
         req.session.username = user.username;
         res.status(200).json(user.username);
     });
-})
+});
 
 // Signup of a user
 app.post("/signup", (req, res) =>{
@@ -76,14 +76,14 @@ app.post("/signup", (req, res) =>{
         }
         res.status(200).json(false);
     });
-})
+});
 
 // Logout of a user
 app.get("/logout", (req, res) => {
 
     req.session.destroy();
     res.status(200).send();
-})
+});
 
 // Post a roar
 app.post("/postRoar", (req, res) =>  {
@@ -97,7 +97,7 @@ app.post("/postRoar", (req, res) =>  {
     }else{
         res.status(401).send();
     }
-})
+});
 
 // Get all roars
 app.get("/roars", (req, res) => {
@@ -107,7 +107,22 @@ app.get("/roars", (req, res) => {
 
         res.status(200).json(rows);
     });
-})
+});
+
+app.post("/like", (req, res) => {
+    const roary_id = req.body.roary_id;
+    if(req.session?.authenticated){
+
+        likeRoary(req.session.username, roary_id, (er) => {
+            if(er) return res.status(500).send();
+
+            res.status(200).send();
+        });
+
+    }else{
+        res.status(401).send();
+    }
+});
 
 // Last route to handle 404
 app.get('*', function(req, res){

@@ -1,4 +1,3 @@
-
 const sqlite3 = require('sqlite3').verbose();
 
 const createTables = (db) => {
@@ -46,7 +45,7 @@ const getUser = (email, callback) => {
 
 const signup = (username, email, password_hash, callback) => {
 
-    var stmt = roaryDB.prepare("INSERT INTO users (username, email, password) VALUES (?,?,?)");
+    const stmt = roaryDB.prepare("INSERT INTO users (username, email, password) VALUES (?,?,?)");
     stmt.run(username, email, password_hash, (er)=>{
         callback(er);
     });
@@ -54,7 +53,7 @@ const signup = (username, email, password_hash, callback) => {
 }
 
 const postRoar = (username, message, callback) => {
-    var stmt = roaryDB.prepare("INSERT INTO roaries (message, username, timestamp) VALUES (?,?,?)");
+    const stmt = roaryDB.prepare("INSERT INTO roaries (message, username, timestamp) VALUES (?,?,?)");
     const timestamp = Date.now();
     stmt.run(message, username, timestamp, (er)=>{
         callback(er);
@@ -68,9 +67,32 @@ const getRoars = (callback) => {
     });
 }
 
+const likeRoary = (username, roary_id, callback) => {
+    roaryDB.get(`SELECT COUNT(*) AS 'count' FROM likes WHERE roary_id = ? AND username = ?`, [roary_id, username], (err, row) => {
+        if(err)
+            return callback(err, row);
+
+        if(row.count == 0){
+            // create a like
+            const stmt = roaryDB.prepare("INSERT INTO likes (roary_id, username) VALUES (?,?)");
+            stmt.run(roary_id, username, (er)=>{
+                callback(er, {});
+            });
+            stmt.finalize();
+
+        }else{
+            // remove like
+            roaryDB.run("DELETE FROM likes WHERE roary_id = ? AND username = ?",  [roary_id, username], (erro, row2) => {
+                callback(erro, row2)
+            });
+        }        
+    });
+}
+
 module.exports = {
     getUser,
     signup,
     postRoar,
     getRoars,
+    likeRoary
 };
