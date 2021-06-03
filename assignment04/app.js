@@ -64,7 +64,7 @@ app.post("/login", (req, res) => {
 app.post("/signup", (req, res) =>{
     const email = req.body.email;
     const username = req.body.username;
-    const password = req.body.password;7
+    const password = req.body.password;
 
     const salt = bcrypt.genSaltSync(SALT_ROUNDS);
     const hash = bcrypt.hashSync(password);
