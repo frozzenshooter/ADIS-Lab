@@ -108,7 +108,6 @@ app.get("/roars", (req, res) => {
     }
 
     getRoars(name, (err, rows) => {
-        console.log(err);
         if(err) return res.status(500).send();
 
         res.status(200).json(rows);
