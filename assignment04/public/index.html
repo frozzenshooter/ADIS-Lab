@@ -353,7 +353,7 @@
                 }
             }
 
-            function getDateimeString(timestamp){
+            function getDateTimeString(timestamp){
                 let dateTimeString = "";
 
                 const date = new Date(timestamp);
@@ -372,6 +372,7 @@
 
             async function fetchRoars() {
                 if (!localStorage.getItem('username')) {
+                    // this is wrong - still show roarys but you cant filter for liked ones
                     return;
                 }
 
