@@ -102,7 +102,13 @@ app.post("/postRoar", (req, res) =>  {
 // Get all roars
 app.get("/roars", (req, res) => {
 
-    getRoars((err, rows) => {
+    let name = null;
+    if(req.session?.authenticated)
+    {
+        name = req.session?.username;
+    }
+
+    getRoars(name, (err, rows) => {
         if(err) return res.status(500).send();
 
         res.status(200).json(rows);

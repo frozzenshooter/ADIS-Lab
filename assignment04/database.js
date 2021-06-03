@@ -18,8 +18,8 @@ const createTables = (db) => {
                 ")");
                 
         db.run("CREATE TABLE IF NOT EXISTS likes ("+
-                    "roary_id INTEGER,"+
-                    "username VARCHAR,"+
+                    "roary_id INTEGER NOT NULL,"+
+                    "username VARCHAR NOT NULL,"+
                     "PRIMARY KEY (roary_id, username),"+
                     "FOREIGN KEY (roary_id) REFERENCES roaries (roary_id) ON DELETE CASCADE ON UPDATE NO ACTION,"+
                     "FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE ON UPDATE NO ACTION)");
@@ -61,8 +61,8 @@ const postRoar = (username, message, callback) => {
     stmt.finalize();
 }
 
-const getRoars = (callback) => {
-    roaryDB.all("SELECT * from roaries ORDER BY timestamp DESC", [], (err, rows) => {
+const getRoars = (username, callback) => {
+    roaryDB.all("SELECT roaries.roary_id, roaries.message, roaries.timestamp, roaries.username, COUNT(likes.username) as 'likes' FROM roaries LEFT JOIN likes ON roaries.roary_id = likes.roary_id GROUP BY roaries.roary_id ORDER BY timestamp DESC", [], (err, rows) => {
         callback(err, rows);
     });
 }
