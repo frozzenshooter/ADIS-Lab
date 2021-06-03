@@ -71,7 +71,6 @@ app.post("/signup", (req, res) =>{
 
     signup(username, email, hash, (err) => {
         if(err) {
-            console.log(err);
             return res.status(200).json(true);
         }
         res.status(200).json(false);
@@ -109,6 +108,7 @@ app.get("/roars", (req, res) => {
     }
 
     getRoars(name, (err, rows) => {
+        console.log(err);
         if(err) return res.status(500).send();
 
         res.status(200).json(rows);

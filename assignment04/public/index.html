@@ -392,17 +392,10 @@
 
                 // simple get request
                 const response = await fetch("/roars");
-                const roars = await response.json();
-
-                console.log(roars);
-
-                //TODO Further Roar Processing
-
-                let likedRoars = false;
+                let roars = await response.json();
 
                 if (location.hash === '#/liked') {
-                    // show only liked roars
-                    likedRoars = true;
+                    roars = roars.filter(r => r.hasUserLiked);
                 }
 
                 document.querySelector('#roar-list').innerHTML = "";
@@ -418,7 +411,7 @@
                                 </h5>
                         
                                 <p class="card-text">${roar.message}</p>
-                                <button onclick="likeRoary(${roar.roary_id})" class="btn badge badge-pill ${likedRoars ? 'badge-danger' : 'badge-secondary'}"><b>&#10084;&emsp;${roar.likes}</b></button>
+                                <button onclick="likeRoary(${roar.roary_id})" class="btn badge badge-pill ${roar.hasUserLiked ? 'badge-danger' : 'badge-secondary'}"><b>&#10084;&emsp;${roar.likes}</b></button>
                             </div>
                         </div>
                     `);

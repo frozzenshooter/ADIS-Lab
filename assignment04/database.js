@@ -62,9 +62,18 @@ const postRoar = (username, message, callback) => {
 }
 
 const getRoars = (username, callback) => {
-    roaryDB.all("SELECT roaries.roary_id, roaries.message, roaries.timestamp, roaries.username, COUNT(likes.username) as 'likes' FROM roaries LEFT JOIN likes ON roaries.roary_id = likes.roary_id GROUP BY roaries.roary_id ORDER BY timestamp DESC", [], (err, rows) => {
-        callback(err, rows);
-    });
+    if(username){
+        roaryDB.all("SELECT roaries.roary_id, roaries.message, roaries.timestamp, roaries.username, COUNT(likes.username) as 'likes', EXISTS (SELECT 1 FROM likes WHERE likes.roary_id = roaries.roary_id AND likes.username = '"+username+"') as 'hasUserLiked' FROM roaries LEFT JOIN likes ON roaries.roary_id = likes.roary_id GROUP BY roaries.roary_id ORDER BY timestamp DESC", [], (err, rows) => {
+            callback(err, rows);
+        });
+    }else{
+        roaryDB.all("SELECT roaries.roary_id, roaries.message, roaries.timestamp, roaries.username, COUNT(likes.username) as 'likes' FROM roaries LEFT JOIN likes ON roaries.roary_id = likes.roary_id GROUP BY roaries.roary_id ORDER BY timestamp DESC", [], (err, rows) => {
+            callback(err, rows);
+        });
+    }
+
+
+
 }
 
 const likeRoary = (username, roary_id, callback) => {
