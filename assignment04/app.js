@@ -37,7 +37,7 @@ app.use(session({
     secret: 'keyboard cat', // For a production environment use a random string via a environment variable 
     resave: true,
     saveUninitialized: true, // hold all sessions
-    cookie: { secure: true }
+    cookie: { secure: false }
 }));
 
 //Login of a user
@@ -134,6 +134,6 @@ app.get('*', function(req, res){
     res.status(404).send('Error 404 - Page not found');
 });
 
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Example app listening at https://localhost:${port}`);
 });
