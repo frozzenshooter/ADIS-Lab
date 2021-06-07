@@ -3,10 +3,10 @@ var CACHE_NAME = 'v1';
 function precache() {
     return caches.open(CACHE_NAME).then(function (cache) {
         return cache.addAll([
-        './', 
-        './index.html',
-        './roars',
-        '/bootstrap.min.css'
+            './', 
+            './index.html',
+            './roars',
+            '/bootstrap.min.css'
         ]);
     });
 }
