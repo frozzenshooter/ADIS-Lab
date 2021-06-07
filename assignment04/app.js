@@ -67,7 +67,7 @@ app.post("/signup", (req, res) =>{
     const password = req.body.password;
 
     const salt = bcrypt.genSaltSync(SALT_ROUNDS);
-    const hash = bcrypt.hashSync(password);
+    const hash = bcrypt.hashSync(password, salt);
 
     signup(username, email, hash, (err) => {
         if(err) {
