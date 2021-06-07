@@ -167,6 +167,7 @@
                             document.getElementById('roar-list').classList.remove('d-none');
                         } else {
                             document.getElementById('login-required').classList.remove('d-none');
+                            document.getElementById('roar-list').classList.remove('d-none');
                         }
 
                         // reset roar list and fetch roars
@@ -385,14 +386,12 @@
             }
 
             async function fetchRoars() {
-                if (!localStorage.getItem('username')) {
-                    // this is wrong - still show roarys but you cant filter for liked ones
-                    return;
-                }
 
                 // simple get request
                 const response = await fetch("/roars");
                 let roars = await response.json();
+
+                console.log(roars);
 
                 if (location.hash === '#/liked') {
                     roars = roars.filter(r => r.hasUserLiked);
@@ -422,7 +421,7 @@
             document.querySelector('#roary-register form').addEventListener('submit', register);
             document.querySelector('#roar-form form').addEventListener('submit', postRoar);
             window.addEventListener('hashchange', routeChanged, false);
-            setInterval(fetchRoars, 10000);
+            setInterval(fetchRoars, 5000);
             routeChanged();
 
 
@@ -447,7 +446,6 @@
                 });
             }
 
-        </script>
-        <!-- <script src="service_worker.js"></script> -->
+        </script>        
     </body>
 </html>

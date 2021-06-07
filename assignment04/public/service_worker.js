@@ -54,6 +54,7 @@ self.addEventListener('install', function(evt) {
 self.addEventListener('fetch', function(evt) {
     console.log('The service worker is serving the asset.');
     evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
+        console.log('The service worker is serving the asset from cache.');
         return fromCache(evt.request);
     }));
 });
@@ -65,6 +66,7 @@ function fromNetwork(request, timeout) {
 
         fetch(request).then(function (response)
             {
+                //caches.open(CACHE_NAME).put(request, response);
                 clearTimeout(timeoutId);
                 fulfill(response);
 
