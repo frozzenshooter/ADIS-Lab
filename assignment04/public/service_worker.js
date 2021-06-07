@@ -54,6 +54,11 @@ function fromCache(request) {
 }
 
 function update(request) {
+
+    if (request.method === "POST") {
+        return;
+    }
+
     return caches.open(CACHE_NAME).then(function (cache) {
         return fetch(request).then(function (response) {
             return cache.put(request, response);

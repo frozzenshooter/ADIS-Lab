@@ -391,8 +391,6 @@
                 const response = await fetch("/roars");
                 let roars = await response.json();
 
-                console.log(roars);
-
                 if (location.hash === '#/liked') {
                     roars = roars.filter(r => r.hasUserLiked);
                 }
