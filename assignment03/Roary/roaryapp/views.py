@@ -89,3 +89,16 @@ def likeRoar(request):
 
     return HttpResponse(status=500)
 
+def createTestRoaries(request):
+
+    if request.user.is_authenticated:
+
+        amount = request.GET.get('amount', 100)
+
+        Roar.objects.all().delete()
+
+        for i in range(int(amount)):
+            message = "Post ("+ str(i) + ")"
+            Roar.objects.create(author=request.user, post=message)
+
+    return HttpResponse(status=200)
