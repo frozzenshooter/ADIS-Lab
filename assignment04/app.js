@@ -13,7 +13,7 @@ const session = require('express-session')
 const uuid = require('uuid').v4;
 
 //Database
-const {getUser, signup, postRoar, getRoars, likeRoary} = require('./database');
+const {getUser, signup, postRoar, getRoars, likeRoary, createTestRoars} = require('./database');
 
 //Passwords
 const bcrypt = require('bcryptjs');
@@ -128,6 +128,21 @@ app.post("/like", (req, res) => {
         res.status(401).send();
     }
 });
+
+app.get("/createTestRoaries", (req, res) => {
+
+    if(req.session?.authenticated){
+        const amount = req.query.amount;
+
+        createTestRoars(req.session.username, amount, (er)=>{
+            if(er) return res.status(500).send();
+        }) 
+    }else{
+        res.status(401).send();
+    }
+
+    res.status(200).send();
+})
 
 // Last route to handle 404
 app.get('*', function(req, res){

@@ -98,10 +98,26 @@ const likeRoary = (username, roary_id, callback) => {
     });
 }
 
+const createTestRoars = (username, amount, callback) => {
+    roaryDB.serialize(() => {
+        roaryDB.run("DELETE FROM roaries");
+
+        for(let i= 0; i < amount; i++){
+            const stmt = roaryDB.prepare("INSERT INTO roaries (message, username, timestamp) VALUES (?,?,?)");
+            const timestamp = Date.now();
+            stmt.run("Post ("+i+")", username, timestamp, (er)=>{
+                callback(er);
+            });
+            stmt.finalize();
+        }
+    })
+}
+
 module.exports = {
     getUser,
     signup,
     postRoar,
     getRoars,
-    likeRoary
+    likeRoary,
+    createTestRoars
 };
